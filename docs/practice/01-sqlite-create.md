@@ -4,6 +4,42 @@
 свого варіанта — таблицю-вимір 1 — з правильно обраними типами даних,
 закріпивши CLI (або DB Browser for SQLite) і типи даних із Лекції 1.*
 
+## Крок 1. Інструмент для SQL
+
+Обидва інструменти з Лекції 1 працюють з тим самим файлом `.db` — оберіть
+один (можна тримати й обидва, перемикаючись за потреби).
+
+### Варіант А. DB Browser for SQLite (DB4S) — графічний інтерфейс
+
+Завантажте інсталятор з офіційного сайту
+[sqlitebrowser.org/dl](https://sqlitebrowser.org/dl/) — окремі збірки
+для Windows, macOS і Linux. Альтернативно, через пакетний менеджер:
+
+```bash
+brew install --cask db-browser-for-sqlite   # macOS
+sudo apt install sqlitebrowser              # Ubuntu/Debian
+```
+
+Після встановлення: відкрийте застосунок **DB Browser for SQLite**
+(Spotlight/Launchpad на macOS, чи `open -a "DB Browser for SQLite"` з
+терміналу). **New Database** створює файл `.db`, вкладка
+**Execute SQL** — де виконуються всі запити нижче.
+
+### Варіант Б. CLI `sqlite3` — командний рядок
+
+- **macOS**: `sqlite3` уже вбудований — відкрийте Термінал і перевірте
+  `sqlite3 --version`. Для новішої версії: `brew install sqlite`.
+- **Linux (Ubuntu/Debian)**: `sudo apt install sqlite3`.
+- **Windows**: `winget install -e --id SQLite.SQLite`, потім у **новому**
+  вікні термінала — `sqlite3 --version`. Якщо команда не знайдена —
+  завантажте `sqlite-tools-win-*.zip` з
+  [sqlite.org/download.html](https://sqlite.org/download.html),
+  розпакуйте і запускайте `sqlite3.exe` з цієї папки.
+
+Перевірка, що інструмент готовий (будь-який варіант): відкрийте будь-яку
+тестову базу і виконайте `.databases` — має з'явитися рядок з назвою
+файлу.
+
 ## Варіанти
 
 Оберіть варіант за номером у списку групи (або як призначить викладач).
