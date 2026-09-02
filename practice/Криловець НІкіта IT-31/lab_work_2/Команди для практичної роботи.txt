@@ -16,11 +16,11 @@ Limit 5
 INSERT INTO "Аптека" (id, name, manufacturer, form, price, stock_quantity)
 VALUES (11, 'Лоратадин', 'Київмедпрепарат', NULL, 52.00, 90);
 
-SELECT id, name, manufacturer, form, price, stock_quantity
+SELECT *
 FROM Аптека
 WHERE form IS NULL
 
-SELECT id, name, manufacturer, form, price, stock_quantity
+SELECT *
 FROM Аптека
 WHERE form IS NOT NULL
 
