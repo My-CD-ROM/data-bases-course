@@ -1,0 +1,31 @@
+Завдання 1
+SELECT name, price 
+FROM Аптека
+
+Завдання 2
+SELECT price 
+FROM Аптека
+Where price > 70
+
+Завдання 3
+SELECT price 
+FROM Аптека
+Limit 5
+
+Завдання 4
+INSERT INTO "Аптека" (id, name, manufacturer, form, price, stock_quantity)
+VALUES (11, 'Лоратадин', 'Київмедпрепарат', NULL, 52.00, 90);
+
+SELECT id, name, manufacturer, form, price, stock_quantity
+FROM Аптека
+WHERE form IS NULL
+
+SELECT id, name, manufacturer, form, price, stock_quantity
+FROM Аптека
+WHERE form IS NOT NULL
+
+Завдання 5
+SELECT price, stock_quantity
+FROM Аптека
+WHERE price > 70
+AND stock_quantity < 100
