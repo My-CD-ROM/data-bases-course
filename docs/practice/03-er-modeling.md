@@ -11,11 +11,29 @@
 ## Варіант
 
 Номер варіанта — той самий, що ви отримали в
-[Практиці 1](01-sqlite-create.md), і повна таблиця з усіма 10 темами
-та всіма трьома таблицями кожної теми наведена там. Сьогодні знадобиться
-**повний рядок** вашого варіанта: не тільки вимірна таблиця, яку ви вже
-створили, а обидві вимірні таблиці й фактова таблиця з двома зовнішніми
-ключами.
+[Практиці 1](01-sqlite-create.md); там наведена лише таблиця-вимір 1,
+яку ви вже створили. Сьогодні знадобиться **повний рядок** вашого
+варіанта — з усіма трьома таблицями, — і саме він наведений нижче
+(так само в Практиці 4 ви повернетесь саме до цієї таблиці, а не до
+таблиці з Практики 1).
+
+| № | Тема | Таблиця-вимір 1 | Таблиця-вимір 2 | Факт/журнальна таблиця |
+|---|---|---|---|---|
+| 1 | Бібліотека | `books(id, title, author, publication_year, genre, copies_count)` | `readers(id, last_name, first_name, email, registration_date)` | `loans(id, book_id→books, reader_id→readers, loan_date, return_date)` |
+| 2 | Інтернет-магазин одягу | `products(id, name, category, size, price, stock_quantity)` | `customers(id, last_name, first_name, email, city)` | `orders(id, product_id→products, customer_id→customers, order_date, quantity, status)` |
+| 3 | Кінотеатр | `movies(id, title, genre, duration_min, year, age_rating)` | `viewers(id, last_name, first_name, email, phone)` | `tickets(id, movie_id→movies, viewer_id→viewers, hall, showtime, price, seat, purchase_date)` |
+| 4 | Аптека | `medicines(id, name, manufacturer, form, price, stock_quantity)` | `suppliers(id, name, contact_person, phone, city)` | `deliveries(id, medicine_id→medicines, supplier_id→suppliers, delivery_date, quantity, purchase_price)` |
+| 5 | Автосалон | `cars(id, brand, model, year, price, status)` | `clients(id, last_name, first_name, phone, email)` | `sales(id, car_id→cars, client_id→clients, sale_date, sale_price)` |
+| 6 | Готель | `rooms(id, type, price_per_night, capacity, status)` | `guests(id, last_name, first_name, email, phone)` | `bookings(id, room_id→rooms, guest_id→guests, check_in_date, check_out_date)` |
+| 7 | Спортзал (фітнес-клуб) | `memberships(id, type, duration_days, price)` | `clients(id, last_name, first_name, phone, birth_date)` | `membership_sales(id, membership_id→memberships, client_id→clients, purchase_date, expiration_date)` |
+| 8 | Служба доставки їжі | `dishes(id, name, category, price, restaurant)` | `couriers(id, last_name, first_name, phone, transport)` | `orders(id, dish_id→dishes, courier_id→couriers, order_date, address, status)` |
+| 9 | Університет (деканат) | `students(id, last_name, first_name, group_name, admission_year)` | `courses(id, title, credits, semester)` | `grades(id, student_id→students, course_id→courses, grade, grade_date)` |
+| 10 | Транспортна компанія | `drivers(id, last_name, first_name, experience_years, license_category)` | `routes(id, origin, destination, distance_km)` | `trips(id, driver_id→drivers, route_id→routes, trip_date, duration_min)` |
+
+Назви таблиць і стовпців — англійською (`snake_case`), як і в
+Практиці 1; стрілка `→` показує, на яку таблицю й через яку саме
+таблицю-вимір веде кожен зовнішній ключ фактової таблиці. Обидва
+зв'язки кожного варіанта — 1:N (детальніше — у Завданні 2 нижче).
 
 ## Синтаксис опису сутностей у erDiagram
 
@@ -45,7 +63,7 @@
 
 Приклад — інтернет-магазин одягу (products, customers, orders):
 
-```
+```mermaid
 erDiagram
     products {
         int id PK
@@ -59,7 +77,7 @@ erDiagram
         int id PK
         string last_name
         string first_name
-        string phone
+        string email
         string city
     }
     orders {
@@ -194,8 +212,11 @@ erDiagram
 
 ## Що здати й оцінюється
 
-Здайте ноутбук або текстовий файл із зазначеним номером варіанта, п'ять
-виконаних завдань і відповідями на контрольні питання:
+Ця практика — виняток із загальної конвенції `lab_work_N.sql` / `.db` /
+`.md`: сьогодні ще немає жодного SQL-коду і жодної зміни файлу бази,
+тож здайте лише один файл — `lab_work_3.md` — із зазначеним номером
+варіанта, ER-діаграмою (mermaid `erDiagram`), п'ятьма виконаними
+завданнями і відповідями на контрольні питання:
 
 - Чим логічна модель відрізняється від концептуальної, і чим фізична —
   від логічної?
