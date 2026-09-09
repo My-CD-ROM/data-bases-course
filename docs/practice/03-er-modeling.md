@@ -45,7 +45,7 @@
 
 Приклад — інтернет-магазин одягу (products, customers, orders):
 
-```mermaid
+```
 erDiagram
     products {
         int id PK
