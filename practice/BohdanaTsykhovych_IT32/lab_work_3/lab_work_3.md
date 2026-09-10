@@ -29,8 +29,8 @@ erDiagram
         date sale_date
         real sale_price
     }
-    cars ||--o{ sales : "продається" }
-    clients ||--o{ sales : "купує" }
+    cars ||--o{ sales : "продається" 
+    clients ||--o{ sales : "купує" 
 ```
 
 # Завдання 2
