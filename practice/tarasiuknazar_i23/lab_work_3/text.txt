@@ -1,0 +1,69 @@
+Таблиці:
+ - cars
+ - clients
+ - sales
+
+Зовнішні ключі (таблиця sales):
+ - car_id -> cars.id
+ - client_id -> clients.id
+
+Типи зв'язку:
+ - cars 1:N sales
+ - clients 1:N sales
+
+Первинні й зовнішні ключі кожної таблиці:
+ - cars:
+  - PK: id | FK: немає
+
+ - clients:
+  - PK: id | FK: немає
+
+ - sales:
+  - PK: id | FK: car_id -> cars.id / client_id -> clients.id
+
+Таблиця завдання 4:
+
+ managers(
+     id,
+     last_name,
+     first_name,
+     phone
+ )
+
+FK slaes: manager_id -> managers.id
+managers 1:N sales
+
+
+
+В обох схемах фактова таблиця має власний первинний ключ і два зовнішні ключі, які посилаються на дві вимірні таблиці. В обох випадках обидва зв'язки мають тип 1:N.
+
+
+
+erDiagram
+    cars ||--o{ sales : "має"
+    clients ||--o{ sales : "здійснює"
+
+    cars {
+        int id PK
+        string brand
+        string model
+        int year
+        real price
+        string status
+    }
+
+    clients {
+        int id PK
+        string last_name
+        string first_name
+        string phone
+        string email
+    }
+
+    sales {
+        int id PK
+        int car_id FK
+        int client_id FK
+        date sale_date
+        real sale_price
+    }
