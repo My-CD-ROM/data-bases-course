@@ -11,11 +11,102 @@
 ## Варіант
 
 Номер варіанта — той самий, що ви отримали в
-[Практиці 1](01-sqlite-create.md), і повна таблиця з усіма 10 темами
-та всіма трьома таблицями кожної теми наведена там. Сьогодні знадобиться
-**повний рядок** вашого варіанта: не тільки вимірна таблиця, яку ви вже
-створили, а обидві вимірні таблиці й фактова таблиця з двома зовнішніми
-ключами.
+[Практиці 1](01-sqlite-create.md); там наведена лише таблиця-вимір 1,
+яку ви вже створили. Сьогодні знадобиться **повний рядок** вашого
+варіанта — з усіма трьома таблицями, — і саме він наведений нижче
+(так само в Практиці 4 ви повернетесь саме до цієї таблиці, а не до
+таблиці з Практики 1).
+
+| № | Тема | Таблиця-вимір 1 | Таблиця-вимір 2 | Факт/журнальна таблиця |
+|---|---|---|---|---|
+| 1 | Бібліотека | `books(id, title, author, publication_year, genre, copies_count)` | `readers(id, last_name, first_name, email, registration_date)` | `loans(id, book_id→books, reader_id→readers, loan_date, return_date)` |
+| 2 | Інтернет-магазин одягу | `products(id, name, category, size, price, stock_quantity)` | `customers(id, last_name, first_name, email, city)` | `orders(id, product_id→products, customer_id→customers, order_date, quantity, status)` |
+| 3 | Кінотеатр | `movies(id, title, genre, duration_min, year, age_rating)` | `viewers(id, last_name, first_name, email, phone)` | `tickets(id, movie_id→movies, viewer_id→viewers, hall, showtime, price, seat, purchase_date)` |
+| 4 | Аптека | `medicines(id, name, manufacturer, form, price, stock_quantity)` | `suppliers(id, name, contact_person, phone, city)` | `deliveries(id, medicine_id→medicines, supplier_id→suppliers, delivery_date, quantity, purchase_price)` |
+| 5 | Автосалон | `cars(id, brand, model, year, price, status)` | `clients(id, last_name, first_name, phone, email)` | `sales(id, car_id→cars, client_id→clients, sale_date, sale_price)` |
+| 6 | Готель | `rooms(id, type, price_per_night, capacity, status)` | `guests(id, last_name, first_name, email, phone)` | `bookings(id, room_id→rooms, guest_id→guests, check_in_date, check_out_date)` |
+| 7 | Спортзал (фітнес-клуб) | `memberships(id, type, duration_days, price)` | `clients(id, last_name, first_name, phone, birth_date)` | `membership_sales(id, membership_id→memberships, client_id→clients, purchase_date, expiration_date)` |
+| 8 | Служба доставки їжі | `dishes(id, name, category, price, restaurant)` | `couriers(id, last_name, first_name, phone, transport)` | `orders(id, dish_id→dishes, courier_id→couriers, order_date, address, status)` |
+| 9 | Університет (деканат) | `students(id, last_name, first_name, group_name, admission_year)` | `courses(id, title, credits, semester)` | `grades(id, student_id→students, course_id→courses, grade, grade_date)` |
+| 10 | Транспортна компанія | `drivers(id, last_name, first_name, experience_years, license_category)` | `routes(id, origin, destination, distance_km)` | `trips(id, driver_id→drivers, route_id→routes, trip_date, duration_min)` |
+
+Назви таблиць і стовпців — англійською (`snake_case`), як і в
+Практиці 1; стрілка `→` показує, на яку таблицю й через яку саме
+таблицю-вимір веде кожен зовнішній ключ фактової таблиці. Обидва
+зв'язки кожного варіанта — 1:N (детальніше — у Завданні 2 нижче).
+
+## Синтаксис опису сутностей у erDiagram
+
+Перш ніж переходити до прикладу, розберіть сам формат запису сутності.
+Кожна сутність у mermaid `erDiagram` записується блоком:
+
+```
+назва_сутності {
+    тип назва_стовпця [PK|FK]
+    ...
+}
+```
+
+- **`назва_сутності`** стане назвою майбутньої таблиці (англійською,
+  `snake_case`).
+- Кожен рядок усередині `{ }` — один майбутній стовпець: спочатку йде
+  **абстрактний тип** (`int`, `string`, `real`, `date` — це логічний
+  рівень моделювання, ще не точний тип конкретної СУБД: те, що тут
+  `int`, у SQLite стане `INTEGER`, а в PostgreSQL, наприклад,
+  `SERIAL`), потім — назва стовпця.
+- Необов'язкова третя частина рядка — **роль** стовпця: `PK` (primary
+  key, первинний ключ — однозначно ідентифікує кожен рядок таблиці) або
+  `FK` (foreign key, зовнішній ключ — посилається на первинний ключ
+  **іншої** таблиці й тим самим фізично реалізує зв'язок, намальований
+  лінією між сутностями). Стовпець без жодної позначки — звичайний
+  атрибут, не ключ.
+
+Приклад — інтернет-магазин одягу (products, customers, orders):
+
+```mermaid
+erDiagram
+    products {
+        int id PK
+        string name
+        string category
+        string size
+        real price
+        int stock_quantity
+    }
+    customers {
+        int id PK
+        string last_name
+        string first_name
+        string email
+        string city
+    }
+    orders {
+        int id PK
+        int product_id FK
+        int customer_id FK
+        date order_date
+        int quantity
+        string status
+    }
+    products ||--o{ orders : "замовлений у"
+    customers ||--o{ orders : "оформлює"
+```
+
+Розберіть, як саме розподілені PK і FK у цих трьох блоках:
+
+- `products` і `customers` — вимірні таблиці: у кожної рівно один PK
+  (`id`) і жодного FK. Вони самодостатні й ні на кого не посилаються —
+  саме тому це "виміри", а не "факти".
+- `orders` — фактова таблиця: власний PK (`id`), плюс **два** FK —
+  `product_id` і `customer_id`. FK завжди того самого абстрактного
+  типу, що й PK, на який він посилається (тут обидва — `int`, бо й
+  `products.id`, і `customers.id` — теж `int`). Рівно два FK у
+  фактовій таблиці — по одному на кожну вимірну таблицю, з якою вона
+  зв'язана: це не збіг, а прямий наслідок того, що фактова таблиця
+  з'єднує дві вимірні.
+
+У Завданні 1 ви запишете схему свого варіанта в точнісінько такому ж
+форматі — просто з іншими назвами сутностей і стовпців.
 
 ## Приклад: наскрізна демонстрація
 
@@ -121,8 +212,11 @@ erDiagram
 
 ## Що здати й оцінюється
 
-Здайте ноутбук або текстовий файл із зазначеним номером варіанта, п'ять
-виконаних завдань і відповідями на контрольні питання:
+Ця практика — виняток із загальної конвенції `lab_work_N.sql` / `.db` /
+`.md`: сьогодні ще немає жодного SQL-коду і жодної зміни файлу бази,
+тож здайте лише один файл — `lab_work_3.md` — із зазначеним номером
+варіанта, ER-діаграмою (mermaid `erDiagram`), п'ятьма виконаними
+завданнями і відповідями на контрольні питання:
 
 - Чим логічна модель відрізняється від концептуальної, і чим фізична —
   від логічної?
@@ -148,4 +242,10 @@ erDiagram
 - Розглянуто, як діаграма зміниться при додаванні нової сутності — без
   реалізації, лише як вправа на розуміння структури.
 
-**Лекція до цієї практики:** [Лекція 3. Рівні проєктування баз даних. ER-діаграми](../lectures/03-er-modeling.md)
+**Лекція до цієї практики:** [Лекція 4. Рівні проєктування баз даних. ER-діаграми](../lectures/04-er-modeling.md)
+
+## Рекомендована література
+
+Жученко А. І., Ярощук Л. Д. *Проєктування інформаційних систем: Бази даних.* — Київ: КПІ ім. Ігоря Сікорського, 2022 ([відкритий доступ](https://files.znu.edu.ua/files/Bibliobooks/Inshi83/0063533.pdf)). Розділ 5 — ER-моделювання: інфологічні моделі, нотації Чена та «Вороняча лапка» (Crow's Foot), відображення зв'язків і кардинальності.
+
+Харів Н. О. *Бази даних та інформаційні системи.* — Рівне: НУВГП (Національний університет водного господарства та природокористування), 2018 ([відкритий доступ](https://ep3.nuwm.edu.ua/9129/3/%D0%A5%D0%B0%D1%80%D1%96%D0%B2%20%D0%9D.%D0%9E.pdf)). Теоретичний розділ — модель «сутність-зв'язок» (ER-модель) як етап проектування реляційної БД.
