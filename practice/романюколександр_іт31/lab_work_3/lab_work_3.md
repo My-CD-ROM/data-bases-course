@@ -4,57 +4,35 @@
 
 
 
+```mermaid
 erDiagram
-&#x20;   PRODUCTS {
-&#x20;       int id PK
+   PRODUCTS {
+       int id PK
+       string name
+       string category
+       string size
+       real price
+       int stock_quantity
+   }
+   CUSTOMERS {
+       int id PK
+       string last_name
+       string first_name
+       string email
+       string city
+   }
+   ORDERS {
+       int id PK
+       int product_id FK
+       int customer_id FK
+       date order_date
+       int quantity
+       string status
+   }
 
-&#x20;       string name
-
-&#x20;       string category
-
-&#x20;       string size
-
-&#x20;       real price
-
-&#x20;       int stock\_quantity
-
-&#x20;   }
-
-&#x20;   CUSTOMERS {
-
-&#x20;       int id PK
-
-&#x20;       string last\_name
-
-&#x20;       string first\_name
-
-&#x20;       string email
-
-&#x20;       string city
-
-&#x20;   }
-
-&#x20;   ORDERS {
-
-&#x20;       int id PK
-
-&#x20;       int product\_id FK
-
-&#x20;       int customer\_id FK
-
-&#x20;       date order\_date
-
-&#x20;       int quantity
-
-&#x20;       string status
-
-&#x20;   }
-
-
-
-&#x20;   PRODUCTS ||--o{ ORDERS : product\_id
-
-&#x20;   CUSTOMERS ||--o{ ORDERS : customer\_id
+   PRODUCTS ||--o{ ORDERS : product_id
+   CUSTOMERS ||--o{ ORDERS : customer_id
+```
 
 
 
@@ -93,89 +71,50 @@ Foreign keys:
 
 
 
+```mermaid
 erDiagram
+   PRODUCTS {
+       int id PK
+       string name
+       string category
+       string size
+       real price
+       int stock_quantity
+   }
+   CUSTOMERS {
+       int id PK
+       string last_name
+       string first_name
+       string email
+       string city
+   }
+   ORDERS {
+       int id PK
+       int product_id FK
+       int customer_id FK
+       int warehouse_id FK
+       date order_date
+       int quantity
+       string status
+   }
+   WAREHOUSES {
+       int id PK
+       string address
+       int capacity
+   }
+   ITEMS {
+       int id PK
+       int warehouse_id FK
+       int product_id FK
+   }
 
-&#x20;   PRODUCTS {
+   PRODUCTS ||--o{ ORDERS : product_id
+   CUSTOMERS ||--o{ ORDERS : customer_id
+   WAREHOUSES ||--o{ ORDERS : warehouse_id
 
-&#x20;       int id PK
-
-&#x20;       string name
-
-&#x20;       string category
-
-&#x20;       string size
-
-&#x20;       real price
-
-&#x20;       int stock\_quantity
-
-&#x20;   }
-
-&#x20;   CUSTOMERS {
-
-&#x20;       int id PK
-
-&#x20;       string last\_name
-
-&#x20;       string first\_name
-
-&#x20;       string email
-
-&#x20;       string city
-
-&#x20;   }
-
-&#x20;   ORDERS {
-
-&#x20;       int id PK
-
-&#x20;       int product\_id FK
-
-&#x20;       int customer\_id FK
-
-&#x20;       int warehouse\_id FK
-
-&#x20;       date order\_date
-
-&#x20;       int quantity
-
-&#x20;       string status
-
-&#x20;   }
-
-&#x20;   WAREHOUSES {
-
-&#x20;       int id PK
-
-&#x20;       string address
-
-&#x20;       int capacity
-
-&#x20;   }
-
-&#x20;   ITEMS {
-
-&#x20;       int id PK
-
-&#x20;       int warehouse\_id FK
-
-&#x20;       int product\_id FK
-
-&#x20;   }
-
-
-
-&#x20;   PRODUCTS ||--o{ ORDERS : product\_id
-
-&#x20;   CUSTOMERS ||--o{ ORDERS : customer\_id
-
-&#x20;   WAREHOUSES ||--o{ ORDERS : warehouse\_id
-
-
-
-&#x20;   WAREHOUSES ||--o{ ITEMS : warehouse\_id
-
-&#x20;   PRODUCTS ||--o{ ITEMS : product\_id
+   WAREHOUSES ||--o{ ITEMS : warehouse_id
+   PRODUCTS ||--o{ ITEMS : product_id
+```
 
 
 
