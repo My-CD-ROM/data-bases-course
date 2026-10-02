@@ -3,7 +3,7 @@
 PRAGMA foreign_keys = ON;
 
 
--- Завдання 2
+-- Завдання 2   
 
 CREATE TABLE clients (
     id INTEGER PRIMARY KEY,
