@@ -1,0 +1,35 @@
+У цій практичній використовувались такі команди:
+Завдання 1
+
+UPDATE sales
+SET customer_id = 4
+WHERE id = 1;
+
+Завдання 2
+
+UPDATE medicines
+SET stock_quantity = stock_quantity + 20
+WHERE id = 1;
+
+Завдання 3
+
+Підраховуємо загальну кількість рядків:
+SELECT COUNT(*) AS count_before FROM sales;
+
+DELETE FROM sales
+WHERE id = 1;
+
+Підраховуємо загальну кількість рядків після видалення рядка:
+SELECT COUNT(*) AS count_after FROM sales;
+
+Завдання 4
+
+PRAGMA foreign_keys = ON;
+
+Спроба видалити елемент з таблиці на який діє ON DELETE RESTRICT:
+DELETE FROM medicines WHERE id = 2;
+
+Спроба видалити елемент з таблиці на який діє ON DELETE SET NULL:
+DELETE FROM customers WHERE id = 1;
+Перевірка ключа customers, на який діє ON DELETE SET NULL:
+SELECT * FROM sales WHERE customer_id IS NULL;
