@@ -1,0 +1,2925 @@
+
+<!doctype html>
+<html lang="uk" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Матеріали лекцій і практичних занять курсу">
+      
+      
+        <meta name="author" content="Анатолій Куротич, Роман Боба">
+      
+      
+      
+        <link rel="prev" href="../10-having/">
+      
+      
+        <link rel="next" href="../12-sorting-filtering/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>11. Комбіновані завдання з групуванням та відбором даних - Бази даних в інформаційних системах</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#11" class="md-skip">
+          Перейти до змісту
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Хедер">
+    <a href="../.." title="Бази даних в інформаційних системах" class="md-header__button md-logo" aria-label="Бази даних в інформаційних системах" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Бази даних в інформаційних системах
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              11. Комбіновані завдання з групуванням та відбором даних
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Темна тема"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Темна тема" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Світла тема"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Світла тема" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Пошук" placeholder="Пошук" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Шукати">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистити" aria-label="Очистити" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Пошук розпочато
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Курс
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../lectures/01-vstup/" class="md-tabs__link">
+          
+  
+  
+  Лекції
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../01-sqlite-create/" class="md-tabs__link">
+          
+  
+  
+  Практичні
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../independent-study/" class="md-tabs__link">
+          
+  
+  
+  Самостійна робота
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навігація" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Бази даних в інформаційних системах" class="md-nav__button md-logo" aria-label="Бази даних в інформаційних системах" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Бази даних в інформаційних системах
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Курс
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Лекції
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Лекції
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/01-vstup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Вступ. Що таке база даних? Архітектура СУБД. Типи баз даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/02-sqlite-create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Створення бази даних у SQLite: CLI, SQLiteBrowser. Типи даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/03-select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Вибірка даних з таблиць: SELECT, LIMIT, WHERE, NOT NULL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/04-er-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Рівні проєктування баз даних. ER-діаграми
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/05-insert-keys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Вставка даних (INSERT). Первинні та зовнішні ключі
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/06-constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Обмеження цілісності даних (NOT NULL, UNIQUE, CHECK, DEFAULT) та оновлення й видалення записів (UPDATE, DELETE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/07-joins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Об'єднання таблиць: INNER, LEFT, RIGHT, CROSS JOIN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/08-aggregate-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Агрегатні функції: AVG, COUNT, MIN, MAX, SUM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/09-group-by/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Групування даних (GROUP BY). Відбір груп (HAVING)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/10-sorting-filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Сортування та фільтрація: ORDER BY, DISTINCT, BETWEEN, IN, LIKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/11-formatting-queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Запити форматування таблиць
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/12-acid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Принципи ACID і необхідність транзакцій
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/13-transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Транзакції у SQLite: BEGIN, COMMIT, ROLLBACK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/14-indexes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Індекси в SQLite. Оптимізація запитів, EXPLAIN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/15-csv-import/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. Імпорт даних: CSV → SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/16-generated-columns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. Згенеровані стовпці: VIRTUAL і STORED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/17-postgres-intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. Перехід до PostgreSQL. Використання PgAdmin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/18-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. Подання (Views) і матеріалізовані подання (Materialized Views)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/19-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    19. Функції у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/20-procedures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    20. Процедури у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/21-triggers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    21. Тригери (Triggers) у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Практичні
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Практичні
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-sqlite-create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Створення бази даних у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Формування запитів вибірки у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-er-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Створення ER-діаграм для заданих прикладів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-insert-keys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Додавання записів, встановлення ключів і зв'язків
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Обмеження цілісності даних: NOT NULL, UNIQUE, CHECK, DEFAULT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-update-delete/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Робота з командами оновлення та видалення у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-joins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Запити з різними видами об'єднання таблиць у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-aggregate-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Застосування агрегатних функцій
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-group-by/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Формування запитів з групуванням даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-having/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Відбір груп за допомогою HAVING
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Комбіновані завдання з групуванням та відбором даних
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Комбіновані завдання з групуванням та відбором даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Зміст">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Зміст
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Варіант
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Приклад: наскрізна демонстрація
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Завдання
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Що здати й оцінюється
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Підсумок заняття
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендована література
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12-sorting-filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Сортування та фільтрація даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13-formatting-queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Форматування таблиць
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14-transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Створення та відкат транзакцій у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15-indexes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. Створення індексів та аналіз ефективності запитів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16-csv-import/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. Імпорт даних із CSV у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17-generated-columns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. Згенеровані стовпці у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18-postgres-intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. Створення бази даних у PostgreSQL (PgAdmin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    19. Створення та застосування Views у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    20. Написання функцій у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../21-procedures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    21. Створення процедур у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22-triggers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    22. Реалізація тригерів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Самостійна робота
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Самостійна робота
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Огляд і графік
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Зміст">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Зміст
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Варіант
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Приклад: наскрізна демонстрація
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Завдання
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Що здати й оцінюється
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Підсумок заняття
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендована література
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="11">Практика 11. Комбіновані завдання з групуванням та відбором даних<a class="headerlink" href="#11" title="Permanent link">&para;</a></h1>
+<p><em>Мета заняття: об'єднати в одному дослідженні все, що вивчено в цьому
+курсі: проектування таблиці (Лекція 4), її створення й наповнення,
+<code>JOIN</code> (Лекція 7), агрегатні функції (Лекція 8) та <code>GROUP BY</code> і
+<code>HAVING</code> (Лекція 9) — не як п'ять окремих вправ, а як єдиний
+ланцюжок, що веде до одного змістовного висновку про вашу базу
+даних.</em></p>
+<p>Перш ніж писати код, прочитайте загальну потребу вашого варіанта в
+розділі «Варіант» нижче, і сформулюйте одним реченням своє власне
+<strong>питання</strong>, на яке ваша нова таблиця допоможе відповісти — так, як
+воно звучить саме для ваших даних (наприклад, для потреби "аптека
+хоче відстежувати звернення щодо побічних реакцій" питанням може бути
+"Який препарат варто зняти з продажу через часті скарги?"). Завдання
+2-4 нижче — це три кроки до відповіді на ваше питання, а Завдання 5 —
+сама відповідь.</p>
+<h2 id="_1">Варіант<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>На відміну від Практик 9 і 10, сьогодні структура таблиць
+<strong>зміниться</strong> — і спроєктуєте цю зміну ви самі. Нижче для кожного з
+10 варіантів курсу сформульовано загальну бізнес-потребу, яку наявні
+три таблиці ще не закривають, — але не готову схему. Яку саме таблицю
+створити (нову залежну чи таблицю зв'язку "багато-до-багатьох"), які
+в неї колонки, первинний і зовнішні ключі, обмеження (<code>NOT NULL</code>,
+<code>UNIQUE</code>, <code>CHECK</code>, <code>DEFAULT</code>) і де провести поріг у <code>HAVING</code> —
+вирішуєте самі й обґрунтовуєте письмово в Завданнях 1 і 3. Саме це
+рішення й перевіряється сьогодні — не лише вміння написати <code>SELECT</code>,
+а вміння спроєктувати таблицю під конкретну задачу.</p>
+<p>Кожен варіант також називає, яку саме комбінацію <code>WHERE</code>/<code>HAVING</code>
+обов'язково використати в Завданнях 2-4 (на якому агрегаті, з яким
+додатковим фільтром) — комбінації навмисно різні між варіантами:</p>
+<ol>
+<li><strong>Бібліотека.</strong> Читачі хочуть бронювати книги, які зараз видані
+   іншим, — це геть інша дія, ніж сама позика (<code>loans</code>): бронь можна
+   оформити навіть на книгу, яку ще нікому не видавали. Потрібна
+   <strong>таблиця зв'язку "багато-до-багатьох"</strong> між <code>books</code> і <code>readers</code>
+   (одна книга — черга з кількох охочих, один читач — кілька
+   заброньованих книг). Обов'язково: <code>HAVING</code> на <code>COUNT</code> (книги з
+   найбільшою чергою — кандидати на дозамовлення примірників).</li>
+<li><strong>Інтернет-магазин одягу.</strong> Клієнти давно просять можливість
+   залишити відгук і оцінку товару. Потрібна <strong>нова залежна таблиця</strong>,
+   пов'язана з <code>products</code>. Обов'язково: <code>HAVING</code> на <code>AVG</code> (середня
+   оцінка), і <code>WHERE</code> за датою відгуку (наприклад, лише за останні
+   кілька місяців).</li>
+<li><strong>Кінотеатр.</strong> Глядачі хочуть позначати фільми, які планують
+   подивитися, ще ДО купівлі квитка — це не те саме, що <code>tickets</code>
+   (там уже факт покупки). Потрібна <strong>таблиця зв'язку
+   "багато-до-багатьох"</strong> між <code>movies</code> і <code>viewers</code>. Обов'язково: два
+   різних <code>GROUP BY</code> в різних завданнях — один за фільмом (скільки
+   глядачів позначили — попит на сеанси), другий за глядачем (скільки
+   фільмів у списку), і <code>HAVING</code> на <code>COUNT</code> в обох.</li>
+<li><strong>Аптека.</strong> Потрібно реєструвати звернення покупців щодо побічних
+   реакцій на конкретні препарати. Потрібна <strong>нова залежна таблиця</strong>,
+   пов'язана з <code>medicines</code>. Обов'язково: <code>WHERE</code> за рівнем серйозності
+   звернення, <code>HAVING</code> на <code>COUNT</code>.</li>
+<li><strong>Автосалон.</strong> Автосалон хоче знати, які автомобілі найчастіше
+   беруть на тест-драйв кілька різних клієнтів, і які клієнти
+   передивилися багато авто перед покупкою (тест-драйв — це не
+   продаж). Потрібна <strong>таблиця зв'язку "багато-до-багатьох"</strong> між
+   <code>cars</code> і <code>clients</code>. Обов'язково: <code>HAVING</code> на <code>COUNT</code>, порахований в
+   обох напрямках — окремо за автомобілем і окремо за клієнтом.</li>
+<li><strong>Готель.</strong> Готель хоче відстежувати, які номери найчастіше
+   потребують ремонту чи обслуговування (і скільки це коштує), щоб
+   зрозуміти, які невигідно тримати в експлуатації. Потрібна <strong>нова
+   залежна таблиця</strong>, пов'язана з <code>rooms</code>. Обов'язково: <code>HAVING</code> на
+   <code>SUM</code> (сумарна вартість ремонтів), <code>WHERE</code> за періодом (наприклад,
+   лише поточний рік).</li>
+<li><strong>Спортзал (фітнес-клуб).</strong> Абонемент показує, скільки заплатив
+   клієнт, але не показує, чи він взагалі приходить. Потрібна <strong>нова
+   залежна таблиця</strong> — журнал відвідувань, пов'язана з <code>clients</code>.
+   Обов'язково: <code>HAVING</code> на <code>COUNT</code> (дуже активні клієнти проти тих,
+   хто майже не приходить), <code>WHERE</code> за періодом.</li>
+<li><strong>Служба доставки їжі.</strong> Потрібно фіксувати скарги на конкретних
+   кур'єрів (запізнення, пошкоджене замовлення тощо). Потрібна <strong>нова
+   залежна таблиця</strong>, пов'язана з <code>couriers</code>. Обов'язково: <code>WHERE</code> за
+   типом скарги, <code>HAVING</code> на <code>COUNT</code>.</li>
+<li><strong>Університет (деканат).</strong> Деканат хоче фіксувати призначені
+   студентам стипендії за роками (кілька стипендій на одного студента
+   за час навчання). Потрібна <strong>нова залежна таблиця</strong>, пов'язана зі
+   <code>students</code>. Обов'язково: <code>HAVING</code> на <code>SUM</code> (сумарна стипендія),
+   <code>WHERE</code> за навчальним роком.</li>
+<li><strong>Транспортна компанія.</strong> Не кожен водій допущений керувати на
+    будь-якому маршруті — потрібно фіксувати, для яких маршрутів
+    кожен водій має допуск (це не те саме, що фактичні поїздки).
+    Потрібна <strong>таблиця зв'язку "багато-до-багатьох"</strong> між <code>drivers</code> і
+    <code>routes</code>. Обов'язково: <code>HAVING</code> на <code>COUNT</code>, порахований і за
+    водієм (скільки маршрутів), і за маршрутом (скільки водіїв
+    допущено).</li>
+</ol>
+<p>Той самий файл <code>.db</code>, що в Практиках 4-10 — якщо він втрачено,
+поверніться до <code>v{N}_prerequisites.sql</code> з <a href="../04-insert-keys/#sql">Практики
+4</a> і повторно виконайте Завдання 1-4 тієї
+практики, а потім додайте свою нову таблицю поверх відновленої
+структури.</p>
+<h2 id="_2">Приклад: наскрізна демонстрація<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Уявімо невелику книгарню з питанням: <strong>кого з авторів дозамовити до
+нового сезону?</strong> Є таблиці <code>authors</code> (автори) і <code>books</code> (видання,
+зв'язані з автором через <code>author_id</code>).</p>
+<p><strong>Крок 1. Нова таблиця.</strong> Додаємо <code>sales</code> (продажі) — залежну
+таблицю, пов'язану з <code>books</code> через <code>book_id</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">sales</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">book_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">books</span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+<span class="w">    </span><span class="n">quantity</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="n">quantity</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">sale_date</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+<span class="p">);</span>
+<span class="c1">-- і 8 рядків продажів за 2024-2025 роки</span>
+</code></pre></div>
+<p><strong>Крок 2. JOIN + GROUP BY.</strong> Скільки всього примірників продано в
+кожного автора:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">authors</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">sales</span><span class="p">.</span><span class="n">quantity</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total_sold</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">authors</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">books</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">books</span><span class="p">.</span><span class="n">author_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">authors</span><span class="p">.</span><span class="n">id</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">sales</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">sales</span><span class="p">.</span><span class="n">book_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">books</span><span class="p">.</span><span class="n">id</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">authors</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</code></pre></div>
+<p><strong>Крок 3. HAVING.</strong> Лишаємо тих, у кого продано понад 15 примірників
+загалом:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">authors</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">sales</span><span class="p">.</span><span class="n">quantity</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total_sold</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">authors</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">books</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">books</span><span class="p">.</span><span class="n">author_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">authors</span><span class="p">.</span><span class="n">id</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">sales</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">sales</span><span class="p">.</span><span class="n">book_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">books</span><span class="p">.</span><span class="n">id</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">authors</span><span class="p">.</span><span class="n">id</span>
+<span class="k">HAVING</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">sales</span><span class="p">.</span><span class="n">quantity</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">15</span><span class="p">;</span>
+<span class="c1">-- наприклад: Франко — 22, Забужко — 18</span>
+</code></pre></div>
+<p><strong>Крок 4. WHERE.</strong> А чи ті самі автори популярні <em>цього</em> року, а не
+загалом за весь час?</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">authors</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">sales</span><span class="p">.</span><span class="n">quantity</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total_sold</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">authors</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">books</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">books</span><span class="p">.</span><span class="n">author_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">authors</span><span class="p">.</span><span class="n">id</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">sales</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">sales</span><span class="p">.</span><span class="n">book_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">books</span><span class="p">.</span><span class="n">id</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">sales</span><span class="p">.</span><span class="n">sale_date</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="s1">'2025-01-01'</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">authors</span><span class="p">.</span><span class="n">id</span>
+<span class="k">HAVING</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">sales</span><span class="p">.</span><span class="n">quantity</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">15</span><span class="p">;</span>
+<span class="c1">-- Франко зникає з результату: його 22 продажі майже всі торішні</span>
+</code></pre></div>
+<p><strong>Висновок:</strong> дозамовляємо Забужко, а не Франка — попри те, що
+загалом за весь час продано найбільше саме Франка. Саме контраст між
+кроком 3 (загалом) і кроком 4 (лише цей рік) і дає відповідь, заради
+якої писався весь запит.</p>
+<p>Зауважте також: без двох <code>JOIN</code> дані про автора, видання й продаж
+лежать у трьох різних таблицях, і зіставити їх нема як. І <code>GROUP BY
+authors.id</code>, а не <code>GROUP BY authors.name</code> — якщо два різні автори
+випадково матимуть однакове ім'я, групування за іменем помилково
+об'єднає їхні продажі в одну групу, а групування за <code>id</code> — ніколи.</p>
+<h2 id="_3">Завдання<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p><strong>Завдання 1. Спроектуйте й створіть нову таблицю.</strong> За описом
+потреби вашого варіанта в розділі «Варіант» вище — самостійно
+вирішіть, які саме колонки, первинний і зовнішні ключі та обмеження
+потрібні (тип таблиці, "залежна" чи "зв'язку", вже названий у вашому
+варіанті). Напишіть <code>CREATE TABLE</code> з первинним ключем, зовнішнім
+ключем (або двома — якщо це таблиця зв'язку) і хоча б одним
+обмеженням (<code>NOT NULL</code>, <code>UNIQUE</code>, <code>CHECK</code> або <code>DEFAULT</code>) там, де це
+має сенс.</p>
+<p><strong>Мінімальні вимоги до змісту таблиці</strong> (щоб проєктування не звелося
+до "id + зовнішній ключ"): окрім первинного й зовнішніх ключів,
+таблиця повинна мати <strong>щонайменше три</strong> власні змістовні колонки, і
+серед них обов'язково:</p>
+<ul>
+<li>(а) одна колонка, за якою реально можна відфільтрувати рядки у
+  Завданні 4, — саме та ознака (дата, статус, тип, категорія,
+  рівень), яку названо для вашого варіанта в розділі «Варіант»;</li>
+<li>(б) якщо ваш варіант вимагає <code>HAVING</code> на <code>SUM</code> чи <code>AVG</code> (не лише
+  <code>COUNT</code>) — одна числова колонка, яку справді є сенс підсумовувати
+  чи усереднювати (сума, вартість, оцінка), а не довільне число "для
+  годиться".</li>
+</ul>
+<p>Таблиця, що обмежується самим <code>id</code> і зовнішнім ключем (навіть якщо
+формально це "таблиця зв'язку"), — недостатня: у ній немає власних
+даних ні для <code>WHERE</code>, ні для змістовного <code>HAVING</code>, і вона не
+відповідає завданню. Письмово (кількома реченнями) обґрунтуйте кожне
+зі своїх рішень — чому саме такі колонки й обмеження відповідають
+потребі вашого варіанта, а не просто "щоб було". Наповніть таблицю
+6-10 реалістичними рядками через <code>INSERT</code> так, щоб: (а) утворилося
+щонайменше три групи <strong>різного розміру</strong> за зовнішнім ключем —
+інакше поріг у <code>HAVING</code> у Завданні 3 не матиме що відсіювати; (б)
+хоча б один запис у пов'язаній таблиці <strong>не мав жодного</strong> відповідного
+рядка у вашій новій таблиці — він знадобиться в Завданні 5.</p>
+<p><strong>Завдання 2. JOIN + GROUP BY з новою таблицею.</strong> Напишіть запит,
+який об'єднує нову таблицю з тими, до яких вона прив'язана зовнішнім
+ключем (двома <code>JOIN</code>, якщо це таблиця зв'язку), і обчислює для кожної
+групи ту агрегатну функцію, яку називає розділ «Варіант» для вашого
+варіанта (<code>COUNT</code>, <code>SUM</code> чи <code>AVG</code>). Групуйте за <code>id</code> того, про що
+ваше питання (автора, товару, клієнта), а не за його назвою.</p>
+<p><strong>Завдання 3. Додайте HAVING.</strong> Візьміть запит із Завдання 2 і
+додайте до нього <code>HAVING</code> з умовою на щойно обчислену агрегатну
+функцію, щоб лишити у відповіді лише групи, що відповідають на ваше
+питання. Поріг оберіть так, щоб відсіялася хоча б одна група, але не
+всі — інакше <code>HAVING</code> тут нічого не змінює.</p>
+<p><strong>Завдання 4. Усе одразу: WHERE + JOIN + GROUP BY + HAVING.</strong> Напишіть
+один запит із чотирма частинами: <code>JOIN</code> з'єднує таблиці; <code>WHERE</code>
+відкидає зайві рядки ще до групування (наприклад, за роком чи
+статусом); <code>GROUP BY</code> формує групи; <code>HAVING</code> відкидає групи, що не
+пройшли поріг. Це той самий різновид запиту, що й крок 4 наскрізної
+демонстрації вище, але вже на власних даних.</p>
+<p><strong>Завдання 5. Два експерименти і письмовий висновок.</strong></p>
+<p>(а) <em>Пастка групування.</em> Додайте в пов'язану таблицю рядок-"двійник"
+— із тим самим іменем чи назвою, що в одного з наявних записів, — і
+приєднайте до нього 1-2 рядки вашої нової таблиці. Виконайте запит із
+Завдання 3 двічі: один раз групуючи за <code>id</code>, другий раз — за
+текстовою колонкою (іменем/назвою). Запишіть письмово, чим
+відрізняються результати і чому.</p>
+<p>(б) <em>LEFT JOIN.</em> Замініть у запиті Завдання 4 <code>JOIN</code> на <code>LEFT JOIN</code>.
+Запишіть, чи змінилася відповідь і чому — маючи на увазі той запис
+без жодного пов'язаного рядка, який ви навмисно додали в Завданні 1.
+Підказка: подивіться уважно на свої <code>WHERE</code> і <code>HAVING</code> — чи впливає
+на цей запис хоч одна з умов.</p>
+<p>(в) <em>Відповідь на ваше питання.</em> Спираючись на результат Завдання 4,
+напишіть 2-3 речення — саму відповідь на питання, яке ви
+сформулювали на початку заняття, з конкретними іменами чи назвами з
+результату (не "деякі об'єкти задовольняють умову", а "це саме А і Б,
+а не В").</p>
+<h2 id="_4">Що здати й оцінюється<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>Здайте <code>lab_work_11.sql</code> — <code>CREATE TABLE</code> і <code>INSERT</code> нової таблиці
+(Завдання 1) та всі виконані запити (Завдання 2-5) разом із їхніми
+результатами; <code>lab_work_11.db</code> — поточний файл бази даних із доданою
+таблицею; і <code>lab_work_11.md</code> — письмові пояснення до Завдання 5.
+Контрольне питання:</p>
+<ul>
+<li>У Завданні 2 ви об'єднали нову таблицю з тими, до яких вона
+  прив'язана, через <code>JOIN</code>. Якби автор мав дві книги, кожна з яких
+  продавалася тричі, скільки рядків для нього дасть <code>JOIN</code> до
+  <code>GROUP BY</code>, і чому <code>COUNT(*)</code> для такого автора покаже не те число
+  книг, яке ви очікували?</li>
+</ul>
+<p>Оцінюється насамперед коректність нової таблиці (чи справді потрібні
+ключі, обмеження та мінімум змістовних колонок із розділу «Варіант»
+на місці, а не голий <code>id</code> + зовнішній ключ) та те, чи запити в
+Завданнях 2-4 дають
+змістовну, а не випадково правильну відповідь; письмове пояснення в
+Завданні 5 оцінюється за точність обох експериментів і за те,
+наскільки конкретна фінальна відповідь на власне дослідницьке
+питання.</p>
+<h2 id="_5">Підсумок заняття<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Сформулювали власне дослідницьке питання й спроектували нову
+  таблицю (залежну або зв'язку "багато-до-багатьох"), яка допомагає
+  на нього відповісти.</li>
+<li>Побудували ланцюжок <code>JOIN</code> → <code>GROUP BY</code> → <code>HAVING</code> → <code>WHERE</code> в
+  одному запиті на власних даних, а не на навчальному прикладі, і
+  отримали конкретну відповідь на своє питання.</li>
+<li>Експериментально перевірили дві пастки: групування за текстовою
+  колонкою замість первинного ключа, і вплив <code>LEFT JOIN</code> versus
+  <code>JOIN</code> на запис без пов'язаних рядків.</li>
+</ul>
+<p><strong>Лекція до цієї практики:</strong> <a href="../../lectures/09-group-by/">Лекція 9. Групування даних (GROUP BY). Відбір груп (HAVING)</a></p>
+<h2 id="_6">Рекомендована література<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>Харів Н. О. <em>Бази даних та інформаційні системи.</em> — Рівне: НУВГП (Національний університет водного господарства та природокористування), 2018 (<a href="https://ep3.nuwm.edu.ua/9129/3/%D0%A5%D0%B0%D1%80%D1%96%D0%B2%20%D0%9D.%D0%9E.pdf">відкритий доступ</a>). Розділи про проектування таблиць, зовнішні ключі, <code>JOIN</code>, агрегатні функції та групування даних застосовуються тут одночасно, в одному наскрізному прикладі.</p>
+<p>Ужгородський національний університет, інженерно-технічний факультет (уклад.). <em>Організація баз даних: Робота з базами даних. Методичні вказівки і завдання до лабораторних робіт.</em> — Ужгород: ДВНЗ «Ужгородський національний університет», 2021 (<a href="https://www.uzhnu.edu.ua/en/infocentre/get/42933">відкритий доступ</a>). Лабораторні роботи з проектування таблиць та з об'єднання й групування даних придатні для повторення матеріалу перед виконанням комбінованих завдань цієї практики.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Повернутись нагору
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "search.suggest"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0456\u0439\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u0421\u043a\u043e\u043f\u0456\u044e\u0432\u0430\u0442\u0438 \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0429\u0435 1 \u0437\u0431\u0456\u0433 \u043d\u0430 \u0446\u0456\u0439 \u0441\u0442\u043e\u0440\u0456\u043d\u0446\u0456", "search.result.more.other": "\u0429\u0435 # \u0437\u0431\u0456\u0433\u0456\u0432 \u043d\u0430 \u0446\u0456\u0439 \u0441\u0442\u043e\u0440\u0456\u043d\u0446\u0456", "search.result.none": "\u0417\u0431\u0456\u0433\u0456\u0432 \u043d\u0435 \u0437\u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u0417\u043d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0437\u0431\u0456\u0433", "search.result.other": "\u0417\u043d\u0430\u0439\u0434\u0435\u043d\u043e # \u0437\u0431\u0456\u0433\u0456\u0432", "search.result.placeholder": "\u0420\u043e\u0437\u043f\u043e\u0447\u043d\u0456\u0442\u044c \u043f\u0438\u0441\u0430\u0442\u0438 \u0434\u043b\u044f \u043f\u043e\u0448\u0443\u043a\u0443", "search.result.term.missing": "\u041d\u0435 \u0437\u043d\u0430\u0439\u0434\u0435\u043d\u043e \u0437\u0430\u043f\u0438\u0442\u0443", "select.version": "\u041e\u0431\u0440\u0430\u0442\u0438 \u0432\u0435\u0440\u0441\u0456\u044e"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
