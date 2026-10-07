@@ -1,0 +1,27 @@
+1. SELECT car_id, COUNT(*) AS sales_count
+	FROM sales
+	GROUP BY car_id;
+2. SELECT model, COUNT(*) AS sales_count
+	FROM sales
+	JOIN cars ON car_id = cars.id
+	GROUP BY cars.id;
+3. SELECT cars.model,
+       	COUNT(*) AS sales_count,
+      	AVG(cars.price) AS average_price
+	FROM sales
+	JOIN cars ON sales.car_id = cars.id
+	GROUP BY cars.id;
+4. SELECT
+    brand,
+    year,
+    COUNT(*) AS cars_count
+    FROM cars
+    GROUP BY brand, year;
+5. SELECT
+    cars.model,
+    sales.id,
+    COUNT(*) AS sales_count
+	FROM sales
+	JOIN cars
+    	ON sales.car_id = cars.id
+	GROUP BY cars.id;
