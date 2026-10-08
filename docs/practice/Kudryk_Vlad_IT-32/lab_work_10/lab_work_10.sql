@@ -1,4 +1,5 @@
 
+
 PRAGMA foreign_keys = ON;
 
 DROP TABLE IF EXISTS orders;
@@ -32,7 +33,8 @@ CREATE TABLE orders (
 INSERT INTO restaurants (id, name, category) VALUES
     (1, 'Смак', 'Українська'),
     (2, 'Pizza House', 'Піца'),
-    (3, 'Burger Point', 'Бургери');
+    (3, 'Burger Point', 'Бургери'),
+    (4, 'Sushi Master', 'Суші');
 
 INSERT INTO clients (id, full_name, phone) VALUES
     (1, 'Олександр Петренко', '+380501112233'),
@@ -41,42 +43,39 @@ INSERT INTO clients (id, full_name, phone) VALUES
     (4, 'Марія Бондаренко', '+380504445566');
 
 INSERT INTO orders (id, restaurant_id, client_id, dish_name, price, order_date, status) VALUES
-    (1, 1, 1, 'Борщ український', 120.00, '2026-09-01', 'Доставлено'),
-    (2, 2, 2, 'Піца Маргарита', 220.00, '2026-09-01', 'Нове'),
-    (3, 3, 3, 'Бургер класичний', 189.00, '2026-09-02', 'Нове'),
-    (4, 1, 4, 'Вареники', 140.00, '2026-09-03', 'Нове'),
-    (5, 2, 1, 'Піца Пепероні', 240.00, '2026-09-04', 'Нове'),
-    (6, 2, 2, 'Салат Цезар', 159.00, '2026-09-06', 'Нове');
+    (1, 1, 1,    'Борщ український', 120.00, '2026-09-01', 'Доставлено'),
+    (2, 2, 2,    'Піца Маргарита',   220.00, '2026-09-01', 'Нове'),
+    (3, 3, 3,    'Бургер класичний', 189.00, '2026-09-02', 'Нове'),
+    (4, 1, 4,    'Вареники',         140.00, '2026-09-03', 'Нове'),
+    (5, 2, 1,    'Піца Пепероні',    240.00, '2026-09-04', 'Нове'),
+    (6, 2, NULL, 'Салат Цезар',      159.00, '2026-09-06', 'Нове');
 
-SELECT
-    restaurants.name  AS ресторан,
-    orders.dish_name  AS страва,
-    orders.price      AS ціна,
-    orders.order_date AS дата,
-    orders.status     AS статус
+SELECT restaurants.name AS ресторан, COUNT(*) AS кількість_замовлень
 FROM orders
 JOIN restaurants ON orders.restaurant_id = restaurants.id
-ORDER BY orders.order_date;
+GROUP BY restaurants.id
+HAVING COUNT(*) > 1;
 
-SELECT
-    restaurants.name  AS ресторан,
-    clients.full_name AS клієнт,
-    orders.dish_name  AS страва,
-    orders.order_date AS дата
+SELECT restaurants.name AS ресторан, AVG(orders.price) AS середній_чек
 FROM orders
 JOIN restaurants ON orders.restaurant_id = restaurants.id
-JOIN clients     ON orders.client_id     = clients.id
-ORDER BY orders.order_date;
+GROUP BY restaurants.id
+HAVING AVG(orders.price) > 150;
 
-INSERT INTO restaurants (id, name, category) VALUES (4, 'Sushi Master', 'Суші');
+SELECT restaurants.name AS ресторан, SUM(orders.price) AS сума_нових
+FROM orders
+JOIN restaurants ON orders.restaurant_id = restaurants.id
+WHERE orders.status = 'Нове'
+GROUP BY restaurants.id
+HAVING SUM(orders.price) > 250;
 
-SELECT restaurants.name AS ресторан_без_замовлень
+SELECT restaurant_id, COUNT(*)
+FROM orders
+WHERE COUNT(*) > 1
+GROUP BY restaurant_id;
+
+SELECT restaurants.name AS ресторан, COUNT(orders.id) AS кількість_замовлень
 FROM restaurants
 LEFT JOIN orders ON orders.restaurant_id = restaurants.id
-WHERE orders.id IS NULL;
-
-SELECT COUNT(*) AS cross_join_count FROM restaurants, clients;
-
-SELECT COUNT(*) AS restaurants_count FROM restaurants;
-
-SELECT COUNT(*) AS clients_count FROM clients;
+GROUP BY restaurants.id
+HAVING COUNT(orders.id) < 2;
