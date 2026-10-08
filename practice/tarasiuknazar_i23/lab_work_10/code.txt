@@ -1,0 +1,50 @@
+1. SELECT cars.model, COUNT(*) AS cars_count
+	FROM sales
+	JOIN cars
+	ON sales.car_id = cars.id
+	GROUP BY cars.id
+	HAVING COUNT(*) >= 2
+
+2. SELECT cars.model, COUNT(*) AS cars_count
+	FROM sales
+	JOIN cars
+	ON sales.car_id = cars.id
+	GROUP BY cars.id
+	HAVING MIN(2)
+
+3.SELECT cars.model, COUNT(*) AS cars_count
+	FROM sales
+	JOIN cars
+	ON sales.car_id = cars.id
+	WHERE cars.year NOT NULL
+	GROUP BY cars.id
+	HAVING MIN(cars.price) > 20000
+
+4. SELECT cars.model, COUNT(*) AS cars_count
+	FROM sales
+	JOIN cars
+	ON sales.car_id = cars.id
+	WHERE COUNT(*) > 1
+	GROUP BY cars.id
+	HAVING MIN(cars.price) > 20000
+
+Error: Execution finished with errors.
+Result: misuse of aggregate: COUNT()
+At line 1:
+SELECT cars.model, COUNT(*) AS cars_count
+FROM sales
+JOIN cars
+	ON sales.car_id = cars.id
+	WHERE COUNT(*) > 1
+	GROUP BY cars.id
+	HAVING MIN(cars.price) > 20000
+
+5.	SELECT
+	    cars.model,
+	    COUNT(sales.id) AS sales_count
+	FROM cars
+	LEFT JOIN sales
+	    ON sales.car_id = cars.id
+	WHERE cars.model IS NOT NULL
+	GROUP BY cars.id
+	HAVING COUNT(sales.id) < 2;
