@@ -1,0 +1,101 @@
+site_name: Бази даних в інформаційних системах
+site_description: Матеріали лекцій і практичних занять курсу
+site_author: Анатолій Куротич, Роман Боба
+
+theme:
+  name: material
+  language: uk
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Темна тема
+    - scheme: slate
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Світла тема
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.details
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Курс: index.md
+  - Лекції:
+      - "Модуль 1. Основи баз даних і моделювання (SQLite)":
+          - "0. Вступ. Що таке база даних? Архітектура СУБД. Типи баз даних": lectures/00-vstup.md
+          - "1. Створення бази даних у SQLite: CLI, SQLiteBrowser. Типи даних": lectures/01-sqlite-create.md
+          - "2. Вибірка даних з таблиць: SELECT, LIMIT, WHERE, NOT NULL": lectures/02-select.md
+          - "3. Рівні проєктування баз даних. ER-діаграми": lectures/03-er-modeling.md
+          - "4. Вставка даних (INSERT). Первинні та зовнішні ключі": lectures/04-insert-keys.md
+          - "5. Обмеження цілісності даних: NOT NULL, UNIQUE, CHECK, DEFAULT": lectures/05-constraints.md
+          - "6. Оновлення і видалення записів: UPDATE, DELETE": lectures/06-update-delete.md
+      - "Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)":
+          - "7. Об'єднання таблиць: INNER, LEFT, RIGHT, CROSS JOIN": lectures/07-joins.md
+          - "8. Агрегатні функції: AVG, COUNT, MIN, MAX, SUM": lectures/08-aggregate-functions.md
+          - "9. Групування даних (GROUP BY)": lectures/09-group-by.md
+          - "10. Відбір груп (HAVING)": lectures/10-having.md
+          - "11. Сортування та фільтрація: ORDER BY, DISTINCT, BETWEEN, IN, LIKE": lectures/11-sorting-filtering.md
+          - "12. Запити форматування таблиць": lectures/12-formatting-queries.md
+      - "Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)":
+          - "13. Принципи ACID і необхідність транзакцій": lectures/13-acid.md
+          - "14. Транзакції у SQLite: BEGIN, COMMIT, ROLLBACK": lectures/14-transactions.md
+          - "15. Індекси в SQLite. Оптимізація запитів, EXPLAIN": lectures/15-indexes.md
+          - "16. Імпорт даних: CSV → SQLite": lectures/16-csv-import.md
+          - "17. Згенеровані стовпці: VIRTUAL і STORED": lectures/17-generated-columns.md
+      - "Модуль 4. Розширені можливості PostgreSQL":
+          - "18. Перехід до PostgreSQL. Використання PgAdmin": lectures/18-postgres-intro.md
+          - "19. Подання (Views) і матеріалізовані подання (Materialized Views)": lectures/19-views.md
+          - "20. Функції у PostgreSQL": lectures/20-functions.md
+          - "21. Процедури у PostgreSQL": lectures/21-procedures.md
+          - "22. Тригери (Triggers) у PostgreSQL": lectures/22-triggers.md
+  - Практичні:
+      - "Модуль 1. Основи баз даних і моделювання (SQLite)":
+          - "1. Створення бази даних у SQLite": practice/01-sqlite-create.md
+          - "2. Формування запитів вибірки у SQLite": practice/02-select.md
+          - "3. Створення ER-діаграм для заданих прикладів": practice/03-er-modeling.md
+          - "4. Додавання записів, встановлення ключів і зв'язків": practice/04-insert-keys.md
+          - "5. Робота з командами оновлення та видалення у SQLite": practice/05-update-delete.md
+      - "Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)":
+          - "6. Запити з різними видами об'єднання таблиць у SQLite": practice/06-joins.md
+          - "7. Застосування агрегатних функцій": practice/07-aggregate-functions.md
+          - "8. Формування запитів з групуванням даних": practice/08-group-by.md
+          - "9. Відбір груп за допомогою HAVING": practice/09-having.md
+          - "10. Сортування та фільтрація даних": practice/10-sorting-filtering.md
+          - "11. Форматування таблиць": practice/11-formatting-queries.md
+      - "Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)":
+          - "12. Створення та відкат транзакцій у SQLite": practice/12-transactions.md
+          - "13. Створення індексів та аналіз ефективності запитів": practice/13-indexes.md
+          - "14. Імпорт даних із CSV у SQLite": practice/14-csv-import.md
+          - "15. Згенеровані стовпці у SQLite": practice/15-generated-columns.md
+      - "Модуль 4. Розширені можливості PostgreSQL":
+          - "16. Створення бази даних у PostgreSQL (PgAdmin)": practice/16-postgres-intro.md
+          - "17. Створення та застосування Views у PostgreSQL": practice/17-views.md
+          - "18. Написання функцій у PostgreSQL": practice/18-functions.md
+          - "19. Створення процедур у PostgreSQL": practice/19-procedures.md
+          - "20. Реалізація тригерів": practice/20-triggers.md
+  - Самостійна робота:
+      - "Огляд і графік": independent-study/index.md
+      - "Модуль 1": independent-study/module1.md
+      - "Модуль 2": independent-study/module2.md
+      - "Модуль 3": independent-study/module3.md
+      - "Модуль 4": independent-study/module4.md
