@@ -1,0 +1,35 @@
+1.  SELECT
+        sales.id,
+        cars.brand,
+        cars.model
+    FROM sales
+    INNER JOIN cars
+        ON sales.car_id = cars.id
+    ORDER BY cars.brand;
+
+2.  SELECT
+        sales.id,
+        cars.brand,
+        cars.model
+    FROM sales
+    INNER JOIN cars
+        ON sales.car_id = cars.id
+    INNER JOIN clients
+    	ON sales.client_id = clients.id
+    ORDER BY clients.id
+
+3.  SELECT
+    	cars.brand,
+    	cars.model,
+    	cars.id
+    	FROM cars
+    LEFT JOIN sales
+        ON sales.car_id = cars.id
+    	WHERE sales.id IS NULL
+
+4.  SELECT COUNT(*) AS cars_count
+    FROM cars, clients;
+
+    цей запит поєднає кожного клієнта з кожною машиною, не виведе факти продажу.
+
+5. INNER JOIN було використано для отримання фактів продажу (відсіюються машини без продажів) а LEFT JOIN для відоюраження всіх даних лівої таблиці
