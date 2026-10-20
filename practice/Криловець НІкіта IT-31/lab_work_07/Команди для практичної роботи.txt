@@ -1,0 +1,41 @@
+У цій практичній роботі я використовував такі команди:
+
+Завдання 1:
+SELECT 
+    medicines.name AS medicine,
+    sales.sale_date,
+    sales.quantity
+FROM sales
+INNER JOIN medicines
+    ON sales.medicine_id = medicines.id
+ORDER BY sales.sale_date;
+
+
+Завдання 2:
+SELECT 
+    medicines.name AS medicine,
+    customers.name AS customer,
+    sales.sale_date,
+    sales.quantity
+FROM sales
+INNER JOIN medicines
+    ON sales.medicine_id = medicines.id
+INNER JOIN customers
+    ON sales.customer_id = customers.id
+ORDER BY sales.sale_date;
+
+
+Завдання 3:
+SELECT 
+    medicines.id,
+    medicines.name,
+    medicines.manufacturer
+FROM medicines
+LEFT JOIN sales
+    ON medicines.id = sales.medicine_id
+WHERE sales.id IS NULL;
+
+
+Завдання 4:
+SELECT COUNT(*)
+FROM medicines, customers;
