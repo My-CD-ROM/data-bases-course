@@ -1,0 +1,41 @@
+У цій практичній роботі я використовував такі команди:
+
+Завдання 1
+SELECT
+    COUNT(*) AS total_sales,
+    COUNT(medicine_id) AS sales_with_medicine
+FROM sales;
+
+Перевірка кількості NULL
+SELECT COUNT(*) AS rows_without_medicine
+FROM sales
+WHERE medicine_id IS NULL;
+
+Завдання 2
+SELECT
+    SUM(price) AS total_price,
+    AVG(price) AS average_price
+FROM medicines;
+
+Завдання 3
+SELECT
+    MIN(price) AS first_name_alphabetically,
+    MAX(price) AS last_name_alphabetically
+FROM medicines;
+
+Завдання 4
+SELECT
+    COUNT(*) AS total_medicines,
+    SUM(stock_quantity) AS total_stock,
+    AVG(price) AS average_price,
+    MIN(price) AS minimum_price,
+    MAX(price) AS maximum_price
+FROM medicines;
+
+Завдання 5
+SELECT
+    COUNT(*) AS medicines_count,
+    AVG(price) AS average_price,
+    SUM(stock_quantity) AS total_stock
+FROM medicines
+WHERE manufacturer = 'Дарниця';
