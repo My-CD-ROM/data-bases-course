@@ -10,3 +10,39 @@
 - **Завдання 1 (INNER JOIN)**: використано INNER, бо кожне бронювання завжди стосується реально існуючого номера (room_id NOT NULL + FOREIGN KEY) — рядків без пари тут апріорі бути не може, тому INNER і LEFT дали б однаковий результат; INNER обрано як стандартний, найпростіший вибір для такого випадку.
 - **Завдання 2 (INNER JOIN двічі)**: аналогічно — і room_id, і guest_id в bookings є NOT NULL, тому для обох зв'язків гарантовано є пара в обох таблицях-вимірах; якби тут використали LEFT JOIN, результат був би ідентичним, бо NULL-рядків для заміни просто не існує.
 - **Завдання 3 (LEFT JOIN)**: тут потрібен саме LEFT, бо мета — знайти номери БЕЗ пари у bookings. Якби використали INNER JOIN, такі номери (без жодного бронювання) зникли б із результату повністю, і знайти їх було б неможливо — саме це і є ключова відмінність LEFT JOIN від INNER JOIN.
+
+
+## INNER JOIN
+
+```sql
+SELECT rooms.type, guests.last_name, guests.first_name, bookings.check_in_date, bookings.check_out_date
+FROM bookings
+JOIN rooms ON bookings.room_id = rooms.id
+JOIN guests ON bookings.guest_id = guests.id;
+```
+
+## LEFT JOIN
+
+```sql
+SELECT rooms.type, rooms.status
+FROM rooms
+LEFT JOIN bookings ON bookings.room_id = rooms.id
+WHERE bookings.id IS NULL;
+```
+
+## CROSS JOIN
+
+```sql
+SELECT COUNT(*) FROM rooms, guests;
+```
+
+## RIGHT JOIN
+
+```sql
+SELECT rooms.type, guests.last_name
+FROM bookings
+RIGHT JOIN guests ON bookings.guest_id = guests.id;
+```
+
+
+
