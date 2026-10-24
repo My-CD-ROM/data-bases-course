@@ -2,6 +2,10 @@ site_name: Бази даних в інформаційних системах
 site_description: Матеріали лекцій і практичних занять курсу
 site_author: Анатолій Куротич, Роман Боба
 
+# Старі версії сторінок (правило _to_delete) не публікуються
+exclude_docs: |
+  _to_delete/
+
 theme:
   name: material
   language: uk
