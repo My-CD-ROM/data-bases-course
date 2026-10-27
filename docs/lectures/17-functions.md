@@ -133,9 +133,116 @@ CONTEXT:  PL/pgSQL function age_group(integer)
 без `RETURN`. Помилка з’являється лише під час виклику з таким
 значенням, тому найпростіше завжди писати гілку `ELSE`.
 
-**Згенерований стовпець чи функція.** Таку класифікацію можна записати
-й виразом `CASE` у запиті, але тоді його доведеться повторювати в кожному
-запиті, а функцію правлять в одному місці. Згенерований стовпець
+**Вираз CASE – умова прямо в запиті.** Таку саму класифікацію можна
+записати без функції, звичайним SQL. Для цього є вираз `CASE`:
+
+```sql
+SELECT name, age,
+       CASE WHEN age < 1 THEN 'малюк'
+            WHEN age < 7 THEN 'дорослий'
+            ELSE 'старший'
+       END AS age_category
+FROM animals;
+```
+
+```text
+  name  | age | age_category
+--------+-----+--------------
+ Мурка  |   3 | дорослий
+ Барсик |   5 | дорослий
+ Рекс   |   7 | старший
+ Пушок  |   1 | дорослий
+```
+
+Читається так: «у випадку, коли (`WHEN`) умова істинна, тоді (`THEN`)
+таке значення». Як працює `CASE`:
+
+- умови `WHEN` перевіряються згори вниз, і вираз повертає значення
+  `THEN` **першої** істинної умови, решту вже не перевіряє;
+- якщо жодна умова не істинна, повертається значення після `ELSE`;
+- якщо `ELSE` немає, результат – `NULL` (помилки, як у функції без
+  `ELSE`, не буде): `CASE WHEN 0 >= 7 THEN 'старший' WHEN 0 >= 1 THEN
+  'дорослий' END` дає `NULL`;
+- вираз закінчується словом `END`, а `AS` дає колонці назву;
+- усі гілки мають повертати значення одного типу: `CASE WHEN … THEN 1
+  ELSE 'x' END` дає `ERROR:  invalid input syntax for type integer: "x"`.
+
+Пастка з `NULL` та сама, що й в `IF` (розділ 7): для невідомого віку
+умова `age < 1` не істинна, і `CASE` поверне «старший». Якщо `NULL`
+можливий, перевіряйте його першою умовою: `WHEN age IS NULL THEN
+'вік невідомий'`.
+
+Є й коротка форма, коли одну колонку порівнюють з кількома значеннями:
+
+```sql
+SELECT name, species,
+       CASE species WHEN 'кіт'    THEN 'котячі'
+                    WHEN 'собака' THEN 'собачі'
+                    ELSE 'інші'
+       END AS family
+FROM animals;
+```
+
+```text
+  name  | species | family
+--------+---------+--------
+ Мурка  | кіт     | котячі
+ Барсик | кіт     | котячі
+ Рекс   | собака  | собачі
+ Пушок  | хом'як  | інші
+```
+
+**Де можна використовувати CASE.** `CASE` – це вираз, тобто він дає
+одне значення, тому його можна писати всюди, де SQL чекає значення:
+
+- у `SELECT` – нова обчислена колонка, як вище;
+- у `WHERE` – умова відбору:
+  `WHERE CASE WHEN age < 1 THEN 'малюк' WHEN age < 7 THEN 'дорослий'
+  ELSE 'старший' END = 'дорослий'` поверне Мурку, Барсика і Пушка;
+- у `GROUP BY` – групування за обчисленою категорією:
+
+  ```sql
+  SELECT CASE WHEN age < 1 THEN 'малюк'
+              WHEN age < 7 THEN 'дорослий'
+              ELSE 'старший'
+         END AS age_category,
+         COUNT(*) AS cnt
+  FROM animals
+  GROUP BY 1
+  ORDER BY 1;
+  ```
+
+  ```text
+   age_category | cnt
+  --------------+-----
+   дорослий     |   3
+   старший      |   1
+  ```
+
+  (`GROUP BY 1` і `ORDER BY 1` – групувати й сортувати за першою колонкою
+  списку `SELECT`, щоб не повторювати весь `CASE`);
+- в `ORDER BY` – власний порядок сортування, не за абеткою: спершу
+  собаки, потім коти, потім решта:
+  `ORDER BY CASE species WHEN 'собака' THEN 1 WHEN 'кіт' THEN 2 ELSE 3 END, name`;
+- в `UPDATE … SET` – різне нове значення для різних рядків, наприклад
+  `SET status = CASE WHEN age >= 15 THEN 'на спостереженні' ELSE status END`;
+- у згенерованому стовпці (лекція 14):
+  `GENERATED ALWAYS AS (CASE … END) STORED`.
+
+`CASE` – частина стандарту SQL, тож так само він працює і в SQLite.
+
+**CASE чи IF.** `IF … ELSIF … ELSE` – це команда мови PL/pgSQL: її пишуть
+лише в тілі функції чи процедури, і вона керує тим, які команди
+виконувати далі. `CASE` – вираз SQL: його пишуть у будь-якому запиті,
+і він лише обчислює значення.
+
+**CASE чи функція.** `CASE` доведеться повторювати в кожному запиті, де
+потрібна вікова група. Якщо межу груп змінять з 7 на 8 років, правити
+доведеться всі ці запити, і досить пропустити один, щоб різні звіти
+показували різне. Функцію `age_category` правлять один раз, і всі запити,
+що її викликають, одразу отримують нову межу.
+
+**Згенерований стовпець чи функція.** Згенерований стовпець
 (лекція 14) теж може містити `CASE`
 (`GENERATED ALWAYS AS (CASE … END) STORED`), але обчислюється лише з колонок
 того самого рядка, не приймає параметрів і не бачить інших таблиць. Нашу
@@ -240,7 +347,7 @@ HINT:  Use RETURN NEXT or RETURN QUERY.
 ```sql
 CREATE OR REPLACE FUNCTION bad_func() RETURNS VOID AS $$
 BEGIN
-    UPDATE animals SET status = 'виписано';
+    UPDATE animals SET status = 'вибув';
     COMMIT;
 END;
 $$ LANGUAGE plpgsql;
@@ -364,8 +471,113 @@ CONTEXT:  PL/pgSQL function owner_summary(integer) line 8 at RAISE
   `NULL` чи `-1`: помилку неможливо не помітити, а спеціальне значення
   можна не перевірити й понести далі у звіт.
 
-**Префікси `p_` для параметрів і `v_` для змінних** не обов’язкові, але
-не дають назві збігтися з колонкою. Якщо параметр назвати `owner_id`, як
+**Кілька колонок в INTO.** Одним `SELECT … INTO` можна прочитати кілька
+колонок: змінні перелічують через кому в тому самому порядку, що й колонки.
+
+```sql
+CREATE FUNCTION owner_full(p_owner_id INTEGER)
+RETURNS TEXT AS $$
+DECLARE
+    v_last  TEXT;
+    v_first TEXT;
+BEGIN
+    SELECT last_name, first_name INTO v_last, v_first
+    FROM owners WHERE id = p_owner_id;
+    RETURN v_first || ' ' || v_last;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT owner_full(1);    -- Ольга Петренко
+```
+
+Якщо потрібен увесь рядок, зручніше одна змінна типу «рядок таблиці»,
+`%ROWTYPE`, а до колонок звертаються через крапку:
+
+```sql
+DECLARE
+    v_owner owners%ROWTYPE;
+BEGIN
+    SELECT * INTO v_owner FROM owners WHERE id = p_owner_id;
+    RETURN v_owner.first_name || ' ' || v_owner.last_name;
+```
+
+Дві пастки, на які PostgreSQL **не** відповідає помилкою:
+
+- **кількість колонок і змінних не збігається:** зайві колонки
+  відкидаються (`SELECT last_name, first_name INTO v_last` – у `v_last`
+  буде прізвище, ім’я загубиться), а зайві змінні отримують `NULL`;
+- **запит повертає кілька рядків:** у змінні потрапляє лише перший, решта
+  мовчки відкидається. `SELECT name INTO v_name FROM animals WHERE
+  owner_id = 1 ORDER BY name` дасть «Барсик», хоча котів у Петренко два.
+
+Якщо рядок має бути рівно один, пишіть `INTO STRICT`: тоді PostgreSQL
+перевірить це сам і зупинить функцію:
+
+```text
+ERROR:  query returned more than one row
+HINT:  Make sure the query returns a single row, or use LIMIT 1.
+```
+
+а для нуля рядків – `ERROR:  query returned no rows`.
+
+**Що буде без перевірки FOUND.** Якщо `SELECT … INTO` не знайшов рядка,
+помилки немає: змінна просто отримує `NULL`. Без `IF NOT FOUND` виклик
+`owner_summary(99)` тихо поверне `NULL`, бо склеювання з `NULL` дає
+`NULL`, і ніхто не дізнається, що власника не існує.
+
+**Чи можна замість `IF NOT FOUND` написати `IF NOT v_name`?** Ні.
+`NOT` працює лише з логічними значеннями (`true`/`false`), а `v_name` –
+текст. Функція створиться, але будь-який виклик, навіть для наявного
+власника, дасть:
+
+```text
+ERROR:  argument of NOT must be type boolean, not type text
+QUERY:  NOT v_name
+```
+
+Правильніше було б `IF v_name IS NULL THEN`: для власника 99 це спрацює.
+Але така перевірка плутає «рядка немає» і «рядок є, а значення в колонці
+– `NULL`». З `last_name` це не страшно, бо колонка `NOT NULL`. А от якщо
+так перевіряти телефон, `SELECT phone INTO v_phone …` і
+`IF v_phone IS NULL`, то для наявного власника без телефону функція
+скаже «Власника з id 3 не існує». `FOUND` відповідає саме на питання «чи
+знайдено рядок», тому для такої перевірки беріть його.
+
+**FOUND після UPDATE, INSERT і DELETE.** `FOUND` встановлюють не лише
+`SELECT … INTO`, а й команди, що змінюють дані: він дорівнює `true`, якщо
+команда змінила хоча б один рядок. Так перевіряють, чи `UPDATE` взагалі
+знайшов, що змінювати:
+
+```sql
+CREATE FUNCTION set_status(p_id INTEGER, p_status TEXT)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE animals SET status = p_status WHERE id = p_id;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Тварини з id % немає', p_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT set_status(99, 'вибув');
+```
+
+```text
+ERROR:  Тварини з id 99 немає
+CONTEXT:  PL/pgSQL function set_status(integer,text) line 5 at RAISE
+```
+
+Без перевірки `UPDATE` для неіснуючого id мовчки змінив би 0 рядків.
+Цей прийом знадобиться в процедурах на практичних 22–23.
+
+**Префікси `p_` для параметрів і `v_` для змінних.** Це скорочення
+англійських слів: `p_` – *parameter*, «параметр» (значення, яке функція
+отримує під час виклику), `v_` – *variable*, «змінна» (проміжне значення
+з блоку `DECLARE`). Для PostgreSQL це звичайна частина назви, а префікси
+– домовленість для людей: у тілі функції одразу видно, що прийшло ззовні
+(`p_`), що функція обчислила сама (`v_`), а що без префікса – колонка
+таблиці. Вони не обов’язкові, але не дають назві збігтися з колонкою.
+Якщо параметр назвати `owner_id`, як
 колонку `animals.owner_id`, функція створиться, а виклик дасть:
 
 ```text
@@ -376,6 +588,194 @@ DETAIL:  It could refer to either a PL/pgSQL variable or a table column.
 Перейменувати параметр через `CREATE OR REPLACE` не вийде
 (`cannot change name of input parameter`): стару функцію спершу видаляють
 (`DROP FUNCTION pets_count(INTEGER);`, розділ 10).
+
+### Будова функції PL/pgSQL: шпаргалка
+
+Усе, що досі траплялося окремо, в одній функції. Вона повертає картку
+власника: прізвище і скільки в нього тварин словами.
+
+```sql
+CREATE OR REPLACE FUNCTION owner_card(p_owner_id INTEGER)  -- назва і параметри з типами
+RETURNS TEXT AS $$                                         -- тип результату; тіло – між $$
+DECLARE                                                    -- змінні: лише тут, до BEGIN
+    v_name  owners.last_name%TYPE;                         -- тип – як у колонці owners.last_name
+    v_cnt   INTEGER := 0;                                  -- з початковим значенням
+    v_label TEXT;                                          -- без значення – спершу NULL
+BEGIN                                                      -- початок команд (не транзакції!)
+    SELECT last_name INTO v_name FROM owners WHERE id = p_owner_id;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Власника з id % не існує', p_owner_id;
+    END IF;
+
+    SELECT COUNT(*) INTO v_cnt FROM animals WHERE owner_id = p_owner_id;
+    RAISE NOTICE 'Власник %, тварин: %', v_name, v_cnt;    -- повідомлення для налагодження
+
+    v_label := CASE WHEN v_cnt = 0 THEN 'без тварин'       -- присвоєння :=
+                    WHEN v_cnt = 1 THEN 'одна тварина'
+                    ELSE 'кілька тварин'
+               END;
+    RETURN v_name || ': ' || v_label;                      -- результат і вихід з функції
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT owner_card(1);
+SELECT owner_card(2);
+```
+
+```text
+NOTICE:  Власник Петренко, тварин: 2
+       owner_card
+-------------------------
+ Петренко: кілька тварин
+
+NOTICE:  Власник Коваль, тварин: 1
+      owner_card
+----------------------
+ Коваль: одна тварина
+```
+
+Будова: **заголовок** (`CREATE OR REPLACE FUNCTION`, параметри, `RETURNS`),
+**тіло** між `$$`, у тілі – необов’язковий блок **`DECLARE`** і
+обов’язковий блок **`BEGIN … END;`**, наприкінці – **`LANGUAGE plpgsql`**.
+Кожна команда в тілі закінчується крапкою з комою, зокрема `END IF;` і
+`END;`.
+
+Що можна писати в тілі:
+
+| Конструкція | Для чого | Приклад |
+|---|---|---|
+| `назва тип;` у `DECLARE` | оголосити змінну | `v_cnt INTEGER;` |
+| `назва тип := значення;` | змінна з початковим значенням | `v_cnt INTEGER := 0;` |
+| `назва таблиця.колонка%TYPE;` | тип «такий самий, як у колонці» | `v_name owners.last_name%TYPE;` |
+| `назва таблиця%ROWTYPE;` | змінна для цілого рядка таблиці | `v_owner owners%ROWTYPE;` |
+| `назва CONSTANT тип := значення;` | значення, яке не можна змінити | `k CONSTANT INTEGER := 12;` |
+| `змінна := вираз;` | присвоєння | `v_label := 'без тварин';` |
+| `SELECT … INTO змінна, … FROM …;` | записати результат запиту в змінні (кілька – через кому) | розділ 6 |
+| `FOUND` | чи знайшов рядок останній `SELECT … INTO` | `IF NOT FOUND THEN …` |
+| `IF … THEN … ELSIF … ELSE … END IF;` | вибрати, які команди виконати | розділ 3 |
+| `CASE WHEN … THEN … ELSE … END` | вибрати значення (вираз) | розділ 3, приклад вище |
+| `RAISE NOTICE 'текст %', значення;` | вивести повідомлення, функція працює далі | приклад вище |
+| `RAISE EXCEPTION 'текст %', значення;` | зупинити функцію з помилкою, зміни запиту скасовуються | розділ 6 |
+| `RETURN вираз;` | повернути значення і завершити функцію | розділ 1 |
+| `RETURN QUERY SELECT …;` | повернути рядки (для `RETURNS TABLE`) | розділ 4 |
+| `INSERT`, `UPDATE`, `DELETE` | змінити дані (у транзакції запиту) | розділ 5 |
+| `FOR r IN SELECT … LOOP … END LOOP;` | перебрати рядки запиту по одному | нижче, «Цикли» |
+| `FOR i IN 1..n LOOP … END LOOP;` | повторити дії для чисел від 1 до n | нижче, «Цикли» |
+
+`%` у тексті `RAISE` замінюється значеннями після коми, по черзі.
+`RAISE NOTICE` зручно ставити, щоб подивитися, що лежить у змінних: у psql
+повідомлення видно над результатом, у pgAdmin – на вкладці *Messages*.
+
+**Цикли.** Цикл повторює команди в тілі кілька разів. Головний цикл
+PL/pgSQL – **перебір рядків запиту**: `FOR змінна IN SELECT … LOOP …
+END LOOP;`. На кожному кроці в змінну потрапляє черговий рядок, і
+команди між `LOOP` і `END LOOP` виконуються для нього. Функція, що
+збирає тварин власника в один рядок тексту:
+
+```sql
+CREATE FUNCTION owner_pets(p_owner_id INTEGER)
+RETURNS TEXT AS $$
+DECLARE
+    r      RECORD;            -- «поточний рядок» циклу
+    v_list TEXT := '';
+BEGIN
+    FOR r IN SELECT name, species FROM animals
+             WHERE owner_id = p_owner_id ORDER BY name LOOP
+        IF v_list <> '' THEN
+            v_list := v_list || ', ';
+        END IF;
+        v_list := v_list || r.name || ' (' || r.species || ')';
+    END LOOP;
+    RETURN v_list;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT owner_pets(1);
+```
+
+```text
+        owner_pets
+---------------------------
+ Барсик (кіт), Мурка (кіт)
+```
+
+- `RECORD` – тип змінної «рядок будь-якої будови»: її колонки беруть з
+  того запиту, який зараз перебирає цикл. До колонок звертаються через
+  крапку: `r.name`, `r.species`.
+- Змінну циклу по рядках треба оголосити в `DECLARE`. Без цього функція
+  не створиться: `ERROR:  loop variable of loop over rows must be a
+  record variable or list of scalar variables`.
+- Порядок перебору задає `ORDER BY` у запиті циклу; без нього порядок не
+  гарантовано.
+- Якщо запит не повернув жодного рядка, тіло циклу не виконується ні разу
+  (для власника 99 функція поверне порожній рядок).
+- Забули `END LOOP;` – функція не створиться: `syntax error`.
+
+Другий вид – **цикл за числами**, `FOR i IN 1..n LOOP`. Змінну `i`
+оголошувати не треба, PostgreSQL створює її сам:
+
+```sql
+FOR i IN 1..p_years LOOP
+    v := v || i || ' р. = ' || i * 12 || ' міс.; ';
+END LOOP;
+```
+
+Для `p_years = 3` вийде `1 р. = 12 міс.; 2 р. = 24 міс.; 3 р. = 36 міс.;`.
+Є ще `WHILE умова LOOP … END LOOP;` (повторювати, поки умова істинна) і
+`EXIT;` (вийти з циклу достроково), але в курсі вони не знадобляться.
+
+**Коли цикл не потрібен.** Усе, що можна зробити одним запитом, робіть
+одним запитом: так коротше й значно швидше, ніж обробляти рядки по одному.
+Список тварин вище дає й звичайний `SELECT` з агрегатною функцією
+`string_agg`, що склеює значення групи через роздільник:
+
+```sql
+SELECT string_agg(name || ' (' || species || ')', ', ' ORDER BY name)
+FROM animals WHERE owner_id = 1;     -- Барсик (кіт), Мурка (кіт)
+```
+
+Так само «змінити ціну всім» – це один `UPDATE`, а не цикл з `UPDATE` для
+кожного рядка. Цикл потрібен, коли з кожним рядком треба зробити кілька
+кроків з перевірками або фіксувати роботу частинами, як у процедурі з
+`COMMIT` на практиці 23.
+
+**Типові помилки з типами.** Тип потрібен кожному параметру й кожній
+змінній. Без нього функція не створиться:
+
+| Що написали | Що відповість PostgreSQL |
+|---|---|
+| `DECLARE v_name;` | `ERROR:  missing data type declaration at or near ";"` |
+| `owner_summary(p_owner_id)` – параметр без типу | `ERROR:  type p_owner_id does not exist` |
+| `k CONSTANT INTEGER := 12;`, а далі `k := 5;` | `ERROR:  variable "k" is declared CONSTANT` |
+
+А якщо тип вказано, але не той, функція створюється, і помилка
+з’являється лише під час виклику:
+
+| Що сталося | Що відповість PostgreSQL |
+|---|---|
+| `v_cnt INTEGER`, а в нього записали прізвище: `SELECT last_name INTO v_cnt …` | `ERROR:  invalid input syntax for type integer: "Петренко"` |
+| `RETURNS INTEGER`, а повертають текст: `RETURN 'abc';` | `ERROR:  invalid input syntax for type integer: "abc"` (`… while casting return value to function's return type`) |
+
+Тип `%TYPE` якраз захищає від першого випадку: змінна отримує тип колонки,
+і якщо колонку колись змінять, змінна зміниться разом із нею.
+
+**Аргумент не того типу.** Функцію PostgreSQL шукає за назвою **і** типами
+аргументів (сигнатура, розділ 10). Для `owner_summary(p_owner_id INTEGER)`:
+
+| Виклик | Результат |
+|---|---|
+| `owner_summary(1)` | працює |
+| `owner_summary('1')` | працює: текст у лапках без типу PostgreSQL сам перетворює на `INTEGER` |
+| `owner_summary('abc')` | `ERROR:  invalid input syntax for type integer: "abc"` |
+| `owner_summary(1.5)` | `ERROR:  function owner_summary(numeric) does not exist` і `HINT:  … You might need to add explicit type casts.` |
+| `owner_summary(1::BIGINT)` | `ERROR:  function owner_summary(bigint) does not exist` – навіть ціле, але іншого типу |
+| `owner_summary(1, 2)`, `owner_summary()` | `ERROR:  function … does not exist`: інша кількість аргументів |
+| `owner_summary(NULL)` | виконується: власника не знайдено – `Власника з id <NULL> не існує` |
+
+Дробове число чи `BIGINT` PostgreSQL сам у `INTEGER` не перетворює: для
+нього це виклик іншої функції, якої немає. Допомагає явне приведення,
+але з обережністю: `owner_summary(1.5::INTEGER)` округлить 1.5 до 2 і
+покаже власника з id 2.
 
 ## 7. NULL у функції: пастка з IF
 
