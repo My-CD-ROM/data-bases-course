@@ -1,0 +1,2 @@
+(2067) abort at 21 in [INSERT INTO cars (brand, model, year, price, vin) VALUES ('Test', 'Dup', 2020, 10000.0, 'JTNB11HK5L3000001');]: UNIQUE constraint failed: cars.vin
+(2067) abort at 21 in [INSERT INTO cars (brand, model, year, price, vin) VALUES ('Test', 'Dup', 2020, 10000.0, 'JTNB11HK5L3000001');]: UNIQUE constraint failed: cars.vin
