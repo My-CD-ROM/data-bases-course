@@ -1,0 +1,3212 @@
+
+<!doctype html>
+<html lang="uk" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Матеріали лекцій і практичних занять курсу">
+      
+      
+        <meta name="author" content="Анатолій Куротич, Роман Боба">
+      
+      
+      
+        <link rel="prev" href="../11-formatting-queries/">
+      
+      
+        <link rel="next" href="../13-indexes/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>12. Транзакції у SQLite: BEGIN, COMMIT, ROLLBACK. Принципи ACID. Управління блокуваннями - Бази даних в інформаційних системах</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#12-sqlite-begin-commit-rollback-acid" class="md-skip">
+          Перейти до змісту
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Хедер">
+    <a href="../.." title="Бази даних в інформаційних системах" class="md-header__button md-logo" aria-label="Бази даних в інформаційних системах" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Бази даних в інформаційних системах
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              12. Транзакції у SQLite: BEGIN, COMMIT, ROLLBACK. Принципи ACID. Управління блокуваннями
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Темна тема"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Темна тема" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Світла тема"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Світла тема" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Пошук" placeholder="Пошук" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Шукати">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистити" aria-label="Очистити" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Пошук розпочато
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Курс
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../01-vstup/" class="md-tabs__link">
+          
+  
+  
+  Лекції
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../practice/01-sqlite-create/" class="md-tabs__link">
+          
+  
+  
+  Практичні
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../independent-study/" class="md-tabs__link">
+          
+  
+  
+  Самостійна робота
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://my-cd-rom.github.io/data-bases-course/lapa/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Тренажер SQL
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навігація" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Бази даних в інформаційних системах" class="md-nav__button md-logo" aria-label="Бази даних в інформаційних системах" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Бази даних в інформаційних системах
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Курс
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Лекції
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Лекції
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-vstup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Вступ. Що таке база даних? Архітектура СУБД. Типи баз даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-sqlite-create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Створення бази даних у SQLite: CLI, SQLiteBrowser. Типи даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Вибірка даних з таблиць: SELECT, LIMIT, WHERE, NOT NULL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-er-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Рівні проєктування баз даних. ER-діаграми
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-insert-keys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Вставка даних (INSERT). Первинні та зовнішні ключі
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Обмеження цілісності даних (NOT NULL, UNIQUE, CHECK, DEFAULT) та оновлення й видалення записів (UPDATE, DELETE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-joins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Об'єднання таблиць: INNER, LEFT, RIGHT, CROSS JOIN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-aggregate-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Агрегатні функції: AVG, COUNT, MIN, MAX, SUM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-group-by/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Групування даних (GROUP BY). Відбір груп (HAVING)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-sorting-filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Сортування та фільтрація: ORDER BY, DISTINCT, BETWEEN, IN, LIKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11-formatting-queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Запити форматування таблиць
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Транзакції у SQLite: BEGIN, COMMIT, ROLLBACK. Принципи ACID. Управління блокуваннями
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Транзакції у SQLite: BEGIN, COMMIT, ROLLBACK. Принципи ACID. Управління блокуваннями
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Зміст">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Зміст
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Мотивуюча проблема: розірвана пара операцій
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Транзакція: неподільна група операцій
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-acid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. ACID: чотири властивості надійної транзакції
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Без явної транзакції кожна команда сама собі транзакція
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-begin-commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. BEGIN ... COMMIT: фіксація групи змін
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-begin-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. BEGIN ... ROLLBACK: скасування групи змін
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Найважливіша пастка: помилка не скасовує транзакцію сама
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Вкладені транзакції заборонені
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-insert-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Практичний шаблон: атомарна пара INSERT + UPDATE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Блокування й ізольованість: що відбувається, коли два процеси пишуть одночасно
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-acid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Чого ACID не гарантує
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Запитання для самоперевірки
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Підсумок
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендована література
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13-indexes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Індекси в SQLite. Оптимізація запитів, EXPLAIN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14-generated-columns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Згенеровані стовпці: VIRTUAL і STORED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15-postgres-intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. Перехід до PostgreSQL. Використання PgAdmin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. Подання (VIEW) і матеріалізовані подання (MATERIALIZED VIEW)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. Функції у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18-triggers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. Тригери (Triggers) у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Практичні
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Практичні
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/01-sqlite-create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Створення бази даних у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/02-select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Формування запитів вибірки у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/03-er-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Створення ER-діаграм для заданих прикладів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/04-insert-keys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Додавання записів, встановлення ключів і зв'язків
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/05-constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Обмеження цілісності даних: NOT NULL, UNIQUE, CHECK, DEFAULT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/06-update-delete/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Робота з командами оновлення та видалення у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/07-joins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Запити з різними видами об'єднання таблиць у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/08-aggregate-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Застосування агрегатних функцій
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/09-group-by/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Формування запитів з групуванням даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/10-having/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Відбір груп за допомогою HAVING
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/11-combined-tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Комбіновані завдання з групуванням та відбором даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/12-sorting-filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Сортування та фільтрація даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/13-formatting-queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Форматування таблиць
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/14-transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Створення та відкат транзакцій у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/15-indexes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. Створення індексів та аналіз ефективності запитів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/16-csv-import/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. Імпорт даних з CSV в SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/17-csv-import-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. Виконання завдань з імпорту даних із CSV у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/18-generated-columns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. Створення та використання згенерованих стовпців у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/19-postgres-intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    19. Створення бази даних у PostgreSQL (PgAdmin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/20-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    20. Створення та застосування Views у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/21-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    21. Написання функцій у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/22-procedures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    22. Створення та використання процедур у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/23-procedures-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    23. Виконання завдань зі створення процедур у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/24-triggers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    24. Реалізація тригерів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Самостійна робота
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Самостійна робота
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Огляд і графік
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://my-cd-rom.github.io/data-bases-course/lapa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Тренажер SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Зміст">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Зміст
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Мотивуюча проблема: розірвана пара операцій
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Транзакція: неподільна група операцій
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-acid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. ACID: чотири властивості надійної транзакції
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Без явної транзакції кожна команда сама собі транзакція
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-begin-commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. BEGIN ... COMMIT: фіксація групи змін
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-begin-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. BEGIN ... ROLLBACK: скасування групи змін
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Найважливіша пастка: помилка не скасовує транзакцію сама
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Вкладені транзакції заборонені
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-insert-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Практичний шаблон: атомарна пара INSERT + UPDATE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Блокування й ізольованість: що відбувається, коли два процеси пишуть одночасно
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-acid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Чого ACID не гарантує
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Запитання для самоперевірки
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Підсумок
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендована література
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="12-sqlite-begin-commit-rollback-acid">Лекція 12. Транзакції у SQLite: BEGIN, COMMIT, ROLLBACK. Принципи ACID. Управління блокуваннями<a class="headerlink" href="#12-sqlite-begin-commit-rollback-acid" title="Permanent link">&para;</a></h1>
+<p><em>Практика 14 і наступні вимагатимуть не одну команду, а кілька
+пов'язаних, які мають відбутися разом. Наприклад, "продати автомобіль"
+означає і додати рядок у <code>sales</code>, і позначити авто як <code>'продано'</code> у
+<code>cars</code>. Що станеться, якщо перша команда виконалась, а друга ні (збій
+програми, зникло живлення, помилка на другій команді)?</em></p>
+<p><em>Ця лекція пояснює, чому таку "пару" операцій потрібно розглядати як
+єдине неподільне ціле, і які гарантії дає транзакція (ACID). Далі
+показує, як у SQLite позначити її межі (<code>BEGIN</code>, <code>COMMIT</code>,
+<code>ROLLBACK</code>) і що відбувається, коли з базою одночасно працює кілька
+процесів.</em></p>
+<h2 id="1">1. Мотивуюча проблема: розірвана пара операцій<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>Уявімо продаж автомобіля без жодного спеціального механізму, просто
+дві послідовні команди:</p>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">sales</span><span class="w"> </span><span class="p">(</span><span class="n">car_id</span><span class="p">,</span><span class="w"> </span><span class="n">client_id</span><span class="p">,</span><span class="w"> </span><span class="n">sale_date</span><span class="p">,</span><span class="w"> </span><span class="n">sale_price</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s1">'2025-06-10'</span><span class="p">,</span><span class="w"> </span><span class="mi">980000</span><span class="p">);</span>
+
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">cars</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'продано'</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+</code></pre></div>
+<p>Якщо перша команда виконалась, а друга не встигла (програма впала,
+зникло живлення, помилка на другій команді), база залишається
+в <strong>неузгодженому стані</strong>: запис про продаж уже існує, а сам автомобіль
+досі позначений як <code>'в наявності'</code>. Другий продавець теоретично може
+продати той самий автомобіль вдруге. Проблема не в самому SQL
+(обидві команди написані правильно), а в тому, що між ними немає
+жодної гарантії "або обидві, або жодна".</p>
+<h2 id="2">2. Транзакція: неподільна група операцій<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p><strong>Транзакція</strong> це група SQL-команд, яка виконується як одне
+неподільне ціле: або ВСІ команди групи застосовуються до бази, або
+(у разі збою чи свідомої відмови) <strong>жодна</strong>. Проміжного
+стану "виконалась лише половина групи" в базі після завершення
+транзакції не залишається ніколи.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["Транзакція починається"] --&gt; B["INSERT у sales"]
+    B --&gt; C["UPDATE cars.status"]
+    C --&gt; D{"Обидві команди\nуспішні?"}
+    D --&gt;|Так| E["COMMIT:\nобидві зміни зафіксовано"]
+    D --&gt;|Ні, програма виконує ROLLBACK| F["ROLLBACK:\nОБИДВІ зміни скасовано,\nнавіть та, що вже виконалась"]</code></pre>
+<p>Рішення "зафіксувати" чи "скасувати" приймається для ВСІЄЇ групи
+одразу, а не для кожної команди окремо.</p>
+<p>Зверніть увагу, хто саме відкочує. Якщо програма аварійно завершилась
+або зникло живлення, незавершену транзакцію SQLite відкотить сам під
+час наступного відкриття бази. Якщо ж команда просто повернула
+помилку, програма працює далі, і <code>ROLLBACK</code> має виконати вона сама
+(докладно в розділі 7).</p>
+<h2 id="3-acid">3. ACID: чотири властивості надійної транзакції<a class="headerlink" href="#3-acid" title="Permanent link">&para;</a></h2>
+<p><strong>ACID</strong> це акронім чотирьох властивостей, які має гарантувати кожна
+транзакція в надійній СУБД (включно з SQLite):</p>
+<ul>
+<li><strong>Atomicity (атомарність)</strong>: "все або нічого". <code>INSERT</code> у <code>sales</code> і
+  <code>UPDATE</code> у <code>cars</code> або застосовуються ОБИДВА, або жоден. Саме ця
+  властивість вирішує мотивуючу проблему з розділу 1.</li>
+<li><strong>Consistency (узгодженість)</strong>: транзакція переводить базу з одного
+  коректного стану в інший коректний стан. Усі обмеження цілісності
+  (<code>NOT NULL</code>, <code>UNIQUE</code>, <code>CHECK</code>, зовнішні ключі, Лекції 5 і 6) мають
+  виконуватись і до, і після транзакції.</li>
+<li><strong>Isolation (ізольованість)</strong>: якщо з базою одночасно працює кілька
+  користувачів (чи процесів), одна незавершена транзакція не повинна
+  бути видимою для іншої, доки не завершиться. SQLite забезпечує це на
+  рівні файлу бази через систему блокувань (розділ 10); у СУБД для
+  багатьох користувачів, як PostgreSQL, це складніший механізм.</li>
+<li><strong>Durability (стійкість)</strong>: якщо транзакція завершилась успішно
+  (<code>COMMIT</code>), її результат гарантовано зберігається навіть у разі
+  збою живлення чи аварійного завершення програми одразу після цього:
+  дані вже записані на диск, а не лише в пам'яті.</li>
+</ul>
+<p>Кожна властивість захищає від власної поломки. Без атомарності пара
+операцій розривається (розділ 1). Без узгодженості в базі з'являються
+дані, що суперечать правилам предметної області: від'ємний баланс,
+продаж неіснуючого автомобіля. Без ізольованості один користувач
+бачить недороблені зміни іншого (розділ 10). Без стійкості
+підтвердження від бази нічого не варте: користувач бачить повідомлення
+«збережено», а після відключення живлення запису немає.</p>
+<h2 id="4">4. Без явної транзакції кожна команда сама собі транзакція<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">sales</span><span class="w"> </span><span class="p">(</span><span class="n">car_id</span><span class="p">,</span><span class="w"> </span><span class="n">client_id</span><span class="p">,</span><span class="w"> </span><span class="n">sale_date</span><span class="p">,</span><span class="w"> </span><span class="n">sale_price</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s1">'2025-06-10'</span><span class="p">,</span><span class="w"> </span><span class="mi">980000</span><span class="p">);</span>
+<span class="c1">-- у цьому місці зміна ВЖЕ зафіксована в базі, окремо від наступної команди</span>
+
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">cars</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'продано'</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="c1">-- це друга, повністю НЕЗАЛЕЖНА транзакція</span>
+</code></pre></div>
+<p>Це і є причина проблеми з розділу 1: без явних меж кожна окрема
+команда SQL виконується як <strong>своя власна, неявна транзакція</strong> і
+застосовується одразу, незалежно від сусідніх команд. Щоб дві (чи
+більше) команди утворили одну спільну транзакцію, потрібно явно
+позначити її межі.</p>
+<h2 id="5-begin-commit">5. BEGIN ... COMMIT: фіксація групи змін<a class="headerlink" href="#5-begin-commit" title="Permanent link">&para;</a></h2>
+<p>Повернімося до бази ветклініки з Лекції 6: у ній є власники
+(<code>owners</code>) і їхні тварини (<code>animals</code>). Додамо нового власника разом з
+його твариною: тварина без власника в базі існувати не може, тож обидва
+рядки мають з'явитися разом.</p>
+<div class="highlight"><pre><span></span><code><span class="k">BEGIN</span><span class="p">;</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">owners</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">phone</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s1">'Коваль'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Андрій'</span><span class="p">,</span><span class="w"> </span><span class="s1">'0501112233'</span><span class="p">);</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">owner_id</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s1">'Мурка'</span><span class="p">,</span><span class="w"> </span><span class="s1">'кіт'</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+
+<span class="k">COMMIT</span><span class="p">;</span>
+</code></pre></div>
+<p><code>BEGIN</code> відкриває транзакцію: усі наступні команди стають частиною
+однієї групи, а не окремими неявними транзакціями (розділ 4).
+<code>COMMIT</code> фіксує РАЗОМ усі зміни, зроблені після <code>BEGIN</code>: після
+<code>COMMIT</code> обидва нових рядки (і в <code>owners</code>, і в <code>animals</code>) присутні в
+базі.</p>
+<h2 id="6-begin-rollback">6. BEGIN ... ROLLBACK: скасування групи змін<a class="headerlink" href="#6-begin-rollback" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">BEGIN</span><span class="p">;</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">owners</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">phone</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s1">'Тест'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Тестович'</span><span class="p">,</span><span class="w"> </span><span class="s1">'0509998877'</span><span class="p">);</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">owners</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="c1">-- рядок є: його видно всередині цієї ж транзакції...</span>
+
+<span class="k">ROLLBACK</span><span class="p">;</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">owners</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="c1">-- ...але після ROLLBACK результат порожній: рядка в базі немає зовсім</span>
+</code></pre></div>
+<p><code>ROLLBACK</code> скасовує ВСІ зміни, зроблені від останнього <code>BEGIN</code>: рядок,
+доданий усередині транзакції, зникає повністю, так, наче команда
+<code>INSERT</code> ніколи не виконувалась.</p>
+<h2 id="7">7. Найважливіша пастка: помилка не скасовує транзакцію сама<a class="headerlink" href="#7" title="Permanent link">&para;</a></h2>
+<p>Створимо таблицю, у якій правило «баланс не може бути від'ємним»
+оголошене прямо в структурі:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w">      </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="k">owner</span><span class="w">   </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">balance</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="n">balance</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="p">(</span><span class="k">owner</span><span class="p">,</span><span class="w"> </span><span class="n">balance</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'Олена'</span><span class="p">,</span><span class="w"> </span><span class="mi">300</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s1">'Тарас'</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+</code></pre></div>
+<p>Олена хоче переказати Тарасу 500, хоча на її рахунку лише 300. Така
+операція мусить бути відхилена цілком. Виконаємо обидві команди без
+явної транзакції (розділ 4):</p>
+<div class="highlight"><pre><span></span><code><span class="k">UPDATE</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">500</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">owner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Тарас'</span><span class="p">;</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">500</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">owner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Олена'</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Runtime error: CHECK constraint failed: balance &gt;= 0
+</code></pre></div>
+<p>Друга команда відхилена обмеженням <code>CHECK</code>, але перша вже виконана й
+зафіксована сама собою. Порядок команд проблему не знімає: якби першим
+ішло списання, воно впало б на перевірці, а зарахування Тарасу все одно
+виконалося б, бо команди без явної транзакції незалежні одна від одної.</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="k">owner</span><span class="p">,</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">accounts</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>owner  balance
+-----  -------
+Олена  300
+Тарас  600
+</code></pre></div>
+<p>У системі було 400 одиниць, тепер стало 900: Тарас отримав 500, яких
+Олена не відправляла. Обмеження <code>CHECK</code> спрацювало правильно, але
+врятувати цілісність усієї операції воно не могло, бо кожна команда
+була окремою транзакцією.</p>
+<p>Тепер ті самі команди в явній транзакції (початковий стан: 300 і 100):</p>
+<div class="highlight"><pre><span></span><code><span class="k">BEGIN</span><span class="p">;</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">500</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">owner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Тарас'</span><span class="p">;</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">500</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">owner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Олена'</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Runtime error: CHECK constraint failed: balance &gt;= 0
+</code></pre></div>
+<p><strong>Помилка в другій команді не скасовує транзакцію автоматично</strong>:
+перша зміна (Тарас: 600) залишається "в очікуванні" всередині відкритої
+транзакції, і вона буде зафіксована, якщо розробник, не зваживши на
+помилку, виконає <code>COMMIT</code>. Це небезпечно: можна вважати, що вся група
+не пройшла (бо була помилка), тоді як частина вже в базі.
+<strong>Правильна реакція на помилку всередині транзакції це завжди явний
+<code>ROLLBACK</code></strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">ROLLBACK</span><span class="p">;</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="k">owner</span><span class="p">,</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">accounts</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>owner  balance
+-----  -------
+Олена  300
+Тарас  100
+</code></pre></div>
+<p><code>ROLLBACK</code> прибрав і ту команду, що вже виконалась успішно: баланси
+повернулись до початкових 300 і 100. Те саме стосується будь-якого
+порушення обмеження всередині транзакції (<code>UNIQUE</code>, <code>NOT NULL</code>,
+<code>FOREIGN KEY</code>): SQLite лише відхиляє команду, що його спричинила, а
+рішення про долю решти групи приймає програма.</p>
+<p>Цей приклад показує, що властивості ACID працюють разом. Узгодженість
+визначає, що вважати помилкою (від'ємний баланс), атомарність дає
+змогу скасувати через <code>ROLLBACK</code> усю групу, а не лише команду, що
+впала, а стійкість гарантує, що результат успішно зафіксованої групи
+не зникне.</p>
+<h2 id="8">8. Вкладені транзакції заборонені<a class="headerlink" href="#8" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">BEGIN</span><span class="p">;</span>
+<span class="k">BEGIN</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Runtime error: cannot start a transaction within a transaction
+</code></pre></div>
+<p>SQLite не дозволяє відкрити другу транзакцію всередині вже відкритої:
+спроба повторного <code>BEGIN</code> до <code>COMMIT</code>/<code>ROLLBACK</code> першої завершується
+помилкою. (Для сценаріїв, де потрібна "транзакція всередині
+транзакції", SQLite має <code>SAVEPOINT</code>, що виходить за межі цього курсу.)
+Перша транзакція після такої помилки працює далі, і її все одно треба
+завершити командою <code>COMMIT</code> або <code>ROLLBACK</code>.</p>
+<h2 id="9-insert-update">9. Практичний шаблон: атомарна пара INSERT + UPDATE<a class="headerlink" href="#9-insert-update" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">BEGIN</span><span class="p">;</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">sales</span><span class="w"> </span><span class="p">(</span><span class="n">car_id</span><span class="p">,</span><span class="w"> </span><span class="n">client_id</span><span class="p">,</span><span class="w"> </span><span class="n">sale_date</span><span class="p">,</span><span class="w"> </span><span class="n">sale_price</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s1">'2025-06-10'</span><span class="p">,</span><span class="w"> </span><span class="mi">980000</span><span class="p">);</span>
+
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">cars</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'продано'</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+
+<span class="k">COMMIT</span><span class="p">;</span>
+</code></pre></div>
+<p>Це розв'язок мотивуючої проблеми з розділу 1: обидві команди
+всередині однієї транзакції або обидві зафіксуються <code>COMMIT</code>, або (у
+разі помилки чи свідомого <code>ROLLBACK</code>) жодна з них не залишить слід у
+базі. Автомобіль ніколи не опиниться в стані "продано без запису
+продажу" чи "запис продажу без позначки продано".</p>
+<h2 id="10">10. Блокування й ізольованість: що відбувається, коли два процеси пишуть одночасно<a class="headerlink" href="#10" title="Permanent link">&para;</a></h2>
+<p>Навіщо потрібна ізольованість, видно на прикладі. Нехай продавець А
+почав оформлювати продаж автомобіля й змінив його статус на
+<code>'продано'</code>, але операцію ще не завершив:</p>
+<table>
+<thead>
+<tr>
+<th>Крок</th>
+<th>Продавець А</th>
+<th>Продавець Б</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>змінює статус авто на <code>'продано'</code>, транзакція ще не завершена</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td>читає статус <code>'продано'</code> і відмовляє своєму клієнтові</td>
+</tr>
+<tr>
+<td>3</td>
+<td>клієнт не оплатив, тож А скасовує транзакцію (<code>ROLLBACK</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>авто знову <code>'в наявності'</code></td>
+<td>продаж втрачено</td>
+</tr>
+</tbody>
+</table>
+<p>Продавець Б ухвалив рішення на даних, яких насправді ніколи не
+існувало. Ізольованість гарантує, що Б побачить зміну А лише після її
+фіксації.</p>
+<p>SQLite це файлова база, і ізольованість у ній реалізована через
+систему блокувань просто на рівні файлу бази, без окремого серверного
+процесу. Коли транзакція доходить до першої команди, що змінює дані
+(<code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>), SQLite встановлює на файл бази
+<strong>RESERVED</strong>-блокування. Інші процеси й далі можуть читати базу
+(<code>SELECT</code>), але бачать лише останню зафіксовану версію: для продавця Б
+автомобіль досі <code>'в наявності'</code>, доки А не виконав <code>COMMIT</code>. Писати ж
+не може жоден інший процес, доки поточна транзакція не завершиться
+<code>COMMIT</code> чи <code>ROLLBACK</code>. Блокується вся база, а не окремий рядок чи
+таблиця: навіть якщо Б змінює інший автомобіль, він отримає відмову.
+Якщо другий процес спробує писати в той самий момент:</p>
+<div class="highlight"><pre><span></span><code>Runtime error: database is locked
+</code></pre></div>
+<p>Це не збій. SQLite навмисно не пускає двох записувачів одночасно, щоб
+вони не зіпсували дані один одному. Студенти найчастіше бачать цю
+помилку так: у DB Browser є незбережені зміни (не натиснуто "Write
+Changes"), а скрипт чи консоль <code>sqlite3</code> пише в ту саму базу. У
+програмах вона виникає, коли кілька процесів пишуть у той самий файл
+<code>.db</code> (наприклад, десктопний застосунок і фоновий скрипт-імпортер).
+Тому транзакції на запис варто робити короткими: довга транзакція
+тримає блокування і змушує інших чекати.</p>
+<p>SQLite дозволяє пом'якшити цю поведінку параметром <code>busy_timeout</code>:
+замість негайної помилки SQLite чекає вказану кількість мілісекунд,
+повторно намагаючись отримати блокування, перш ніж здатися:</p>
+<div class="highlight"><pre><span></span><code><span class="n">PRAGMA</span><span class="w"> </span><span class="n">busy_timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5000</span><span class="p">;</span><span class="w">  </span><span class="c1">-- чекати до 5 секунд, перш ніж повернути помилку</span>
+</code></pre></div>
+<p>Для бази, з якою працює один процес, таке налаштування не потрібне,
+воно стає важливим, щойно ту саму базу паралельно використовує кілька
+процесів.</p>
+<h2 id="11-acid">11. Чого ACID не гарантує<a class="headerlink" href="#11-acid" title="Permanent link">&para;</a></h2>
+<p>Є кілька поширених помилкових уявлень.</p>
+<p>Транзакція не перевіряє <strong>змістової правильності</strong> даних. Якщо в базі
+немає обмеження <code>CHECK (balance &gt;= 0)</code>, то нічого не завадить зробити
+баланс від'ємним, і транзакція це спокійно зафіксує. Узгодженість у
+значенні ACID означає лише дотримання тих правил, які ви самі оголосили
+в схемі.</p>
+<p>Транзакція не робить запит швидшим і не замінює індекси: це механізм
+надійності, а не продуктивності. Більше того, довга транзакція може
+заважати іншим користувачам, бо тримає блокування (розділ 10).</p>
+<p>Нарешті, ACID гарантує поведінку <strong>в межах однієї бази</strong>. Якщо програма
+пише в базу, а потім відправляє лист, відкотити лист транзакція не
+зможе: зовнішні дії лежать поза її контролем.</p>
+<h2 id="12">12. Запитання для самоперевірки<a class="headerlink" href="#12" title="Permanent link">&para;</a></h2>
+<p><strong>Користувач натиснув «Оплатити», програма вставила рядок у <code>orders</code>, а на другій команді сталася помилка. У якому стані опиниться база без явної транзакції?</strong></p>
+<p>У неузгодженому: замовлення існує, але супутня зміна (наприклад, зменшення залишку на складі) не виконана. Порушена атомарність, бо дві пов'язані дії не були об'єднані в одну транзакцію.</p>
+<p><strong>Яка властивість ACID гарантує, що після <code>COMMIT</code> і раптового вимкнення комп'ютера дані збережуться?</strong></p>
+<p>Стійкість (Durability): успішно зафіксований результат уже записаний на диск, а не лише в оперативну пам'ять.</p>
+<p><strong>Усередині транзакції друга команда завершилась помилкою <code>UNIQUE constraint failed</code>. Що з першою командою і що робити далі?</strong></p>
+<p>Транзакція лишилась відкритою, перша команда "очікує" фіксації. Помилка сама нічого не скасовує, тож програма має явно виконати <code>ROLLBACK</code>; якщо виконати <code>COMMIT</code>, перша зміна збережеться, а друга ні.</p>
+<p><strong>Двоє користувачів одночасно змінюють одну таблицю. Чому один не повинен бачити незавершені зміни іншого і що робить SQLite, коли обидва хочуть писати?</strong></p>
+<p>Це вимога ізольованості: незавершену транзакцію ще можуть скасувати, тож рішення на основі її проміжних даних виявилися б помилковими. SQLite дозволяє писати лише одній транзакції за раз (RESERVED-блокування), інша отримає <code>database is locked</code> або почекає, якщо задано <code>busy_timeout</code>.</p>
+<p><strong>Чому наявності обмеження <code>CHECK</code> недостатньо, щоб переказ коштів був безпечним?</strong></p>
+<p>Обмеження відхиляє лише ту команду, що його порушує. Якщо до цього вже виконалась інша команда групи, її результат лишається. Щоб скасувалась уся група, її об'єднують в одну транзакцію й після помилки виконують <code>ROLLBACK</code>.</p>
+<h2 id="_1">Підсумок<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Транзакція це неподільна група SQL-команд: результат застосовується
+  до бази або весь одразу, або не застосовується взагалі.</li>
+<li><strong>ACID</strong>: Atomicity (все або нічого), Consistency (обмеження
+  цілісності виконуються завжди), Isolation (незавершена транзакція не
+  видима іншим), Durability (зафіксований результат переживає збій).</li>
+<li>Без явного <code>BEGIN</code>/<code>COMMIT</code> кожна окрема команда власна неявна
+  транзакція, тому пов'язана пара команд без явних меж може
+  "розірватися" при збої між ними.</li>
+<li><code>BEGIN</code> відкриває транзакцію; <code>COMMIT</code> фіксує всі зміни від <code>BEGIN</code>
+  разом; <code>ROLLBACK</code> скасовує їх усі, включно з тими, що вже
+  "виконались" усередині транзакції.</li>
+<li>Помилка всередині транзакції НЕ скасовує її автоматично: якщо після
+  помилки забути <code>ROLLBACK</code> і виконати <code>COMMIT</code>, зафіксуються команди,
+  що пройшли без помилки, і база лишиться зміненою частково.</li>
+<li>SQLite не дозволяє вкладені транзакції: повторний <code>BEGIN</code> до
+  завершення першої завершується помилкою.</li>
+<li>Поки транзакція на запис не завершена, SQLite тримає на файлі бази
+  блокування, що не пускає інші процеси писати паралельно
+  ("database is locked"); <code>PRAGMA busy_timeout</code> дозволяє почекати на
+  звільнення блокування замість негайної помилки.</li>
+<li>Транзакція гарантує дотримання лише тих правил, які оголошено в
+  схемі (<code>CHECK</code>, <code>NOT NULL</code>, ключі), а не змістову правильність даних.</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Інтерактивна версія</p>
+<p>Усі приклади можна виконати в браузері й подивитися, що лишиться в базі після «збою» на будь-якій команді, а також спробувати BEGIN, COMMIT, ROLLBACK і пастку «помилка не скасовує транзакцію»: <a href="../../lapa/#lecture-12">Тренажер SQL — Лекція 12</a>.</p>
+</div>
+<p><strong>Практика до цієї лекції:</strong> <a href="../../practice/14-transactions/">Практика 14. Створення та відкат транзакцій у SQLite</a></p>
+<h2 id="_2">Рекомендована література<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Павловський В. І., Петрашенко А. В. <em>Бази даних та засоби управління.</em> — Київ: КПІ ім. Ігоря Сікорського, 2024 (<a href="https://ela.kpi.ua/bitstreams/9f26675d-c42f-485e-aab5-13e6e014b560/download">відкритий доступ</a>). Розділ про транзакції та багатокористувацький паралельний доступ: властивості транзакцій, рівні ізоляції.</p>
+<p>Павловський В. І., Петрашенко А. В., Победа Д. В. <em>Бази даних та засоби управління. Практикум.</em> — Київ: КПІ ім. Ігоря Сікорського, 2021 (<a href="https://ela.kpi.ua/server/api/core/bitstreams/1b620029-0db7-4e2e-83e7-32f7722a69be/content">відкритий доступ</a>). Розділ «Ізоляція транзакцій»: паралельні транзакції, проблеми узгодженості даних.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Повернутись нагору
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "search.suggest"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0456\u0439\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u0421\u043a\u043e\u043f\u0456\u044e\u0432\u0430\u0442\u0438 \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0429\u0435 1 \u0437\u0431\u0456\u0433 \u043d\u0430 \u0446\u0456\u0439 \u0441\u0442\u043e\u0440\u0456\u043d\u0446\u0456", "search.result.more.other": "\u0429\u0435 # \u0437\u0431\u0456\u0433\u0456\u0432 \u043d\u0430 \u0446\u0456\u0439 \u0441\u0442\u043e\u0440\u0456\u043d\u0446\u0456", "search.result.none": "\u0417\u0431\u0456\u0433\u0456\u0432 \u043d\u0435 \u0437\u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u0417\u043d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0437\u0431\u0456\u0433", "search.result.other": "\u0417\u043d\u0430\u0439\u0434\u0435\u043d\u043e # \u0437\u0431\u0456\u0433\u0456\u0432", "search.result.placeholder": "\u0420\u043e\u0437\u043f\u043e\u0447\u043d\u0456\u0442\u044c \u043f\u0438\u0441\u0430\u0442\u0438 \u0434\u043b\u044f \u043f\u043e\u0448\u0443\u043a\u0443", "search.result.term.missing": "\u041d\u0435 \u0437\u043d\u0430\u0439\u0434\u0435\u043d\u043e \u0437\u0430\u043f\u0438\u0442\u0443", "select.version": "\u041e\u0431\u0440\u0430\u0442\u0438 \u0432\u0435\u0440\u0441\u0456\u044e"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+    
+  </body>
+</html>

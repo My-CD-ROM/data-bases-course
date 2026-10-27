@@ -1,0 +1,3390 @@
+
+<!doctype html>
+<html lang="uk" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Матеріали лекцій і практичних занять курсу">
+      
+      
+        <meta name="author" content="Анатолій Куротич, Роман Боба">
+      
+      
+      
+        <link rel="prev" href="../15-postgres-intro/">
+      
+      
+        <link rel="next" href="../17-functions/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>16. Подання (VIEW) і матеріалізовані подання (MATERIALIZED VIEW) - Бази даних в інформаційних системах</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#16-view-materialized-view" class="md-skip">
+          Перейти до змісту
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Хедер">
+    <a href="../.." title="Бази даних в інформаційних системах" class="md-header__button md-logo" aria-label="Бази даних в інформаційних системах" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Бази даних в інформаційних системах
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              16. Подання (VIEW) і матеріалізовані подання (MATERIALIZED VIEW)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Темна тема"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Темна тема" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Світла тема"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Світла тема" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Пошук" placeholder="Пошук" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Шукати">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистити" aria-label="Очистити" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Пошук розпочато
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Курс
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../01-vstup/" class="md-tabs__link">
+          
+  
+  
+  Лекції
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../practice/01-sqlite-create/" class="md-tabs__link">
+          
+  
+  
+  Практичні
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../independent-study/" class="md-tabs__link">
+          
+  
+  
+  Самостійна робота
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://my-cd-rom.github.io/data-bases-course/lapa/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Тренажер SQL
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навігація" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Бази даних в інформаційних системах" class="md-nav__button md-logo" aria-label="Бази даних в інформаційних системах" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Бази даних в інформаційних системах
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Курс
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Лекції
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Лекції
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-vstup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Вступ. Що таке база даних? Архітектура СУБД. Типи баз даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-sqlite-create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Створення бази даних у SQLite: CLI, SQLiteBrowser. Типи даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Вибірка даних з таблиць: SELECT, LIMIT, WHERE, NOT NULL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-er-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Рівні проєктування баз даних. ER-діаграми
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-insert-keys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Вставка даних (INSERT). Первинні та зовнішні ключі
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Обмеження цілісності даних (NOT NULL, UNIQUE, CHECK, DEFAULT) та оновлення й видалення записів (UPDATE, DELETE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-joins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Об'єднання таблиць: INNER, LEFT, RIGHT, CROSS JOIN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-aggregate-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Агрегатні функції: AVG, COUNT, MIN, MAX, SUM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-group-by/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Групування даних (GROUP BY). Відбір груп (HAVING)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-sorting-filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Сортування та фільтрація: ORDER BY, DISTINCT, BETWEEN, IN, LIKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11-formatting-queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Запити форматування таблиць
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12-transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Транзакції у SQLite: BEGIN, COMMIT, ROLLBACK. Принципи ACID. Управління блокуваннями
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13-indexes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Індекси в SQLite. Оптимізація запитів, EXPLAIN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14-generated-columns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Згенеровані стовпці: VIRTUAL і STORED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15-postgres-intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. Перехід до PostgreSQL. Використання PgAdmin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. Подання (VIEW) і матеріалізовані подання (MATERIALIZED VIEW)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. Подання (VIEW) і матеріалізовані подання (MATERIALIZED VIEW)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Зміст">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Зміст
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        База лекції: демобаза ветклініки
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-create-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. CREATE VIEW: запит, збережений під іменем
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Подання завжди актуальне
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Подання для складних запитів
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Запис через просте подання
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Які подання можна змінювати
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-update-with-check-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Рядок зникає після UPDATE. WITH CHECK OPTION
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-create-or-replace-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. CREATE OR REPLACE VIEW і його обмеження
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Залежності між поданнями
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-materialized-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. MATERIALIZED VIEW: знімок, а не живий запит
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-refresh-concurrently" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Матеріалізоване подання для підсумків. REFRESH і CONCURRENTLY
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Звичайне чи матеріалізоване. Видалення подань
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Запитання для самоперевірки
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Підсумок
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендована література
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. Функції у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18-triggers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. Тригери (Triggers) у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Практичні
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Практичні
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/01-sqlite-create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Створення бази даних у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/02-select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Формування запитів вибірки у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/03-er-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Створення ER-діаграм для заданих прикладів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/04-insert-keys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Додавання записів, встановлення ключів і зв'язків
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/05-constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Обмеження цілісності даних: NOT NULL, UNIQUE, CHECK, DEFAULT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/06-update-delete/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Робота з командами оновлення та видалення у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/07-joins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Запити з різними видами об'єднання таблиць у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/08-aggregate-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Застосування агрегатних функцій
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/09-group-by/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Формування запитів з групуванням даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/10-having/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Відбір груп за допомогою HAVING
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/11-combined-tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Комбіновані завдання з групуванням та відбором даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/12-sorting-filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Сортування та фільтрація даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/13-formatting-queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Форматування таблиць
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/14-transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Створення та відкат транзакцій у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/15-indexes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. Створення індексів та аналіз ефективності запитів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/16-csv-import/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. Імпорт даних з CSV в SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/17-csv-import-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. Виконання завдань з імпорту даних із CSV у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/18-generated-columns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. Створення та використання згенерованих стовпців у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/19-postgres-intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    19. Створення бази даних у PostgreSQL (PgAdmin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/20-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    20. Створення та застосування Views у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/21-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    21. Написання функцій у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/22-procedures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    22. Створення та використання процедур у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/23-procedures-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    23. Виконання завдань зі створення процедур у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/24-triggers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    24. Реалізація тригерів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Самостійна робота
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Самостійна робота
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Огляд і графік
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://my-cd-rom.github.io/data-bases-course/lapa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Тренажер SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Зміст">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Зміст
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        База лекції: демобаза ветклініки
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-create-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. CREATE VIEW: запит, збережений під іменем
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Подання завжди актуальне
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Подання для складних запитів
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Запис через просте подання
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Які подання можна змінювати
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-update-with-check-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Рядок зникає після UPDATE. WITH CHECK OPTION
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-create-or-replace-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. CREATE OR REPLACE VIEW і його обмеження
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Залежності між поданнями
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-materialized-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. MATERIALIZED VIEW: знімок, а не живий запит
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-refresh-concurrently" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Матеріалізоване подання для підсумків. REFRESH і CONCURRENTLY
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Звичайне чи матеріалізоване. Видалення подань
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Запитання для самоперевірки
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Підсумок
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендована література
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="16-view-materialized-view">Лекція 16. Подання (VIEW) і матеріалізовані подання (MATERIALIZED VIEW)<a class="headerlink" href="#16-view-materialized-view" title="Permanent link">&para;</a></h1>
+<p><em>Деякі запити доводиться писати знову і знову: тварини на обліку,
+тварини з прізвищами власників, кількість прийомів. Якщо формулу
+виправити в одному місці й забути в іншому, результати розійдуться.
+PostgreSQL дозволяє зберегти запит один раз під іменем – як
+<strong>подання (view)</strong> – і далі звертатися до нього, як до звичайної
+таблиці. Матеріалізоване подання йде ще далі: зберігає не лише запит,
+а й готовий результат.</em></p>
+<h2 id="_1">База лекції: демобаза ветклініки<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>З цієї лекції до кінця курсу всі приклади виконуються на демобазі
+ветклініки – файл
+<a href="../../practice/sql/22-procedures/vet_clinic_demo.sql"><code>vet_clinic_demo.sql</code></a>.
+Кожна лекція починається з бази, щойно завантаженої з цього файлу:
+створіть порожню базу (наприклад, <code>vet_demo</code>), виконайте файл у Query
+Tool, і всі виводи нижче збігатимуться з вашими.</p>
+<p>Порівняно з лекцією 15 у таблиці <code>animals</code> з’явилася колонка <code>status</code>,
+а також таблиці <code>vets</code> (лікарі) і <code>visits</code> (прийоми: яка тварина, у
+якого лікаря, коли і з яким діагнозом):</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">GENERATED</span><span class="w"> </span><span class="n">ALWAYS</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">IDENTITY</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">species</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">age</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">'на обліку'</span><span class="p">,</span>
+<span class="w">    </span><span class="n">owner_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">owners</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div>
+<p>Дані: троє власників (Петренко, Коваль, Мельник), чотири тварини на
+обліку (Мурка, Барсик, Рекс, Пушок), двоє лікарів і три прийоми. Якщо
+<code>status</code> в <code>INSERT</code> не вказати, база запише значення за замовчуванням –
+«на обліку». Від цього <code>DEFAULT</code> залежатиме результат прикладів
+розділу 4.</p>
+<p>Приклади йдуть один за одним на тій самій базі, тому кожен наступний
+бачить зміни попередніх.</p>
+<h2 id="1-create-view">1. CREATE VIEW: запит, збережений під іменем<a class="headerlink" href="#1-create-view" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">animals_active</span><span class="w"> </span><span class="k">AS</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">animals</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'на обліку'</span><span class="p">;</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_active</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> id |  name  | species | age
+----+--------+---------+-----
+  1 | Мурка  | кіт     |   3
+  2 | Барсик | кіт     |   5
+  3 | Рекс   | собака  |   7
+  4 | Пушок  | хом'як  |   1
+</code></pre></div>
+<blockquote>
+<p><strong>Подання (view)</strong> – збережений у базі даних запит з іменем, до якого
+звертаються як до таблиці. Власних даних подання не зберігає: його
+запит виконується щоразу, коли до подання звертаються.</p>
+</blockquote>
+<p>Після <code>CREATE VIEW ім’я AS</code> іде звичайний <code>SELECT</code>. Подання показує
+лише ті колонки, які в ньому перелічено: <code>status</code> і <code>owner_id</code> тут не
+видно. У літературі той самий об’єкт називають <strong>представленням</strong> –
+це синоніми. У pgAdmin подання з’являються в дереві: Schemas, public,
+Views.</p>
+<h2 id="2">2. Подання завжди актуальне<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>Додамо пса Джека – у таблицю <code>animals</code>, а не в подання, без власника і
+без статусу:</p>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'Джек'</span><span class="p">,</span><span class="w"> </span><span class="s1">'собака'</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_active</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Джек'</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> id | name | species | age
+----+------+---------+-----
+  5 | Джек | собака  |   1
+</code></pre></div>
+<p>Джек уже в поданні, хоча ми нічого не оновлювали: кожен <code>SELECT</code> з
+подання заново виконує збережений запит над таблицею. Статус «на
+обліку» Джек отримав з <code>DEFAULT</code>.</p>
+<p>Місця на диску під дані подання не займає:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">pg_relation_size</span><span class="p">(</span><span class="s1">'animals_active'</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> pg_relation_size
+------------------
+                0
+</code></pre></div>
+<h2 id="3">3. Подання для складних запитів<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<p>Реєстратурі потрібен список тварин із прізвищем власника, причому
+тварин без власника (Джек) теж треба показувати. Збережемо <code>LEFT JOIN</code>
+і <code>COALESCE</code> один раз:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">animals_with_owners</span><span class="w"> </span><span class="k">AS</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">species</span><span class="p">,</span>
+<span class="w">       </span><span class="k">COALESCE</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="s1">'без власника'</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">owner</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="n">a</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">owners</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">owner_id</span><span class="p">;</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_with_owners</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> id |  name  | species |    owner
+----+--------+---------+--------------
+  1 | Мурка  | кіт     | Петренко
+  2 | Барсик | кіт     | Петренко
+  3 | Рекс   | собака  | Коваль
+  4 | Пушок  | хом'як  | Мельник
+  5 | Джек   | собака  | без власника
+</code></pre></div>
+<p>Зі звичайним <code>JOIN</code> Джек зник би (чотири рядки замість п’яти): у нього
+немає пари в <code>owners</code>. У поданні таку деталь пишуть один раз і
+правильно.</p>
+<p>У подання можна зберегти й підсумки – скільки разів кожна тварина була
+на прийомі і коли востаннє:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">animal_visits</span><span class="w"> </span><span class="k">AS</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+<span class="w">       </span><span class="k">COUNT</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">visits_count</span><span class="p">,</span>
+<span class="w">       </span><span class="k">MAX</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">visit_date</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">last_visit</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="n">a</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">visits</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">animal_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">id</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animal_visits</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> id |  name  | visits_count | last_visit
+----+--------+--------------+------------
+  1 | Мурка  |            1 | 2026-09-02
+  2 | Барсик |            0 |
+  3 | Рекс   |            1 | 2026-09-15
+  4 | Пушок  |            1 | 2026-10-01
+  5 | Джек   |            0 |
+</code></pre></div>
+<p>Порожня клітинка в psql – це <code>NULL</code>. <code>COUNT(v.id)</code>, а не <code>COUNT(*)</code>:
+після <code>LEFT JOIN</code> Барсик має один рядок з <code>NULL</code> замість прийому, і
+<code>COUNT(*)</code> дав би йому 1.</p>
+<p>З поданням працюють так само, як з таблицею: фільтрують, сортують,
+групують (<code>GROUP BY</code>, <code>HAVING</code>), з’єднують з таблицями й іншими
+поданнями. Тварини, які ще не були на прийомі, разом із власниками:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">w</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">.</span><span class="k">owner</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">visits_count</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">animals_with_owners</span><span class="w"> </span><span class="n">w</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">animal_visits</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span><span class="p">.</span><span class="n">id</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">visits_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>  name  |    owner     | visits_count
+--------+--------------+--------------
+ Барсик | Петренко     |            0
+ Джек   | без власника |            0
+</code></pre></div>
+<p>Крім коротшого запиту, подання дає ще дві речі. Воно <strong>ховає зайві
+колонки</strong>: стажистові можна дати доступ до <code>animals_with_owners</code>, і
+телефонів власників він не побачить. І воно є <strong>одним місцем для
+змін</strong>: якщо таблиці перебудують, виправляють лише запит подання, а
+запити, що до нього звертаються, лишаються без змін.</p>
+<h2 id="4">4. Запис через просте подання<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<p>Додамо кішку Соню через подання <code>animals_active</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">animals_active</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'Соня'</span><span class="p">,</span><span class="w"> </span><span class="s1">'кіт'</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">owner_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Соня'</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> id | name |  status   | owner_id
+----+------+-----------+----------
+  6 | Соня | на обліку |
+</code></pre></div>
+<p>Подання своїх рядків не має, тож рядок записано в таблицю <code>animals</code>.
+Значення отримали лише передані колонки. Колонок <code>status</code> і <code>owner_id</code>
+у поданні немає: <code>status</code> отримав <code>DEFAULT</code> «на обліку», <code>owner_id</code> –
+<code>NULL</code>. Соня видна в поданні лише завдяки <code>DEFAULT</code>.</p>
+<p>Якби <code>status</code> був без <code>DEFAULT</code>:</p>
+<ul>
+<li><code>status TEXT</code> – Соня отримала б <code>NULL</code>: рядок у таблиці є, а в
+  поданні його немає, бо <code>NULL = 'на обліку'</code> не дає <code>TRUE</code>;</li>
+<li><code>status TEXT NOT NULL</code> – <code>INSERT</code> не виконався б:
+  <code>ERROR:  null value in column "status" of relation "animals" violates not-null constraint</code>.</li>
+</ul>
+<p>Рядок, доданий через подання, може в ньому не з’явитися навіть з
+<code>DEFAULT</code>. Подання для тварин, які вибули:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">animals_left</span><span class="w"> </span><span class="k">AS</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'вибув'</span><span class="p">;</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">animals_left</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'Тимко'</span><span class="p">,</span><span class="w"> </span><span class="s1">'кіт'</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span>
+<span class="c1">-- INSERT 0 1</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_left</span><span class="p">;</span>
+<span class="c1">-- (0 rows)</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Тимко'</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> name  |  status
+-------+-----------
+ Тимко | на обліку
+</code></pre></div>
+<p>Тимко в таблиці, але зі статусом з <code>DEFAULT</code>, тож подання вибулих
+тварин його не показує (зате тепер показує <code>animals_active</code>). Умова
+<code>WHERE</code> подання – це фільтр для читання, а не правило заповнення:
+PostgreSQL не підставляє в нові рядки значення з <code>WHERE</code>. Після
+<code>INSERT</code> через подання перевіряйте окремим <code>SELECT</code> із самої таблиці,
+які значення отримали колонки, яких немає в поданні.</p>
+<h2 id="5">5. Які подання можна змінювати<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<p>Через подання, що поєднує кілька таблиць, записати не вийде:</p>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">animals_with_owners</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'Бім'</span><span class="p">,</span><span class="w"> </span><span class="s1">'собака'</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ERROR:  cannot insert into view "animals_with_owners"
+DETAIL:  Views that do not select from a single table or view are not automatically updatable.
+HINT:  To enable inserting into the view, provide an INSTEAD OF INSERT trigger or an unconditional ON INSERT DO INSTEAD rule.
+</code></pre></div>
+<p>PostgreSQL не може визначити, у яку з таблиць і в які колонки писати, а
+<code>owner</code> – це взагалі результат <code>COALESCE</code>. Так само з підсумками:</p>
+<div class="highlight"><pre><span></span><code><span class="k">UPDATE</span><span class="w"> </span><span class="n">animal_visits</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">visits_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ERROR:  cannot update view "animal_visits"
+DETAIL:  Views containing GROUP BY are not automatically updatable.
+</code></pre></div>
+<p>Автоматично змінювати можна лише <strong>просте подання</strong>: з однієї таблиці,
+без <code>JOIN</code>, без <code>GROUP BY</code> і агрегатних функцій, без <code>DISTINCT</code>, <code>LIMIT</code>
+і <code>UNION</code>. Через нього працюють <code>INSERT</code>, <code>UPDATE</code> і <code>DELETE</code>, але
+<code>UPDATE</code> і <code>DELETE</code> бачать лише ті рядки, які показує подання:</p>
+<div class="highlight"><pre><span></span><code><span class="k">UPDATE</span><span class="w"> </span><span class="n">animals_active</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Мурка'</span><span class="p">;</span>
+<span class="c1">-- UPDATE 1</span>
+<span class="k">DELETE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_left</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Тимко'</span><span class="p">;</span>
+<span class="c1">-- DELETE 0: Тимка в поданні animals_left не видно</span>
+</code></pre></div>
+<p>Тригери, згадані в <code>HINT</code>, – тема лекції 18.</p>
+<h2 id="6-update-with-check-option">6. Рядок зникає після UPDATE. WITH CHECK OPTION<a class="headerlink" href="#6-update-with-check-option" title="Permanent link">&para;</a></h2>
+<p>Подання тварин на обліку разом зі статусом, через яке реєстратор
+позначає, хто вибув:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">active_status</span><span class="w"> </span><span class="k">AS</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'на обліку'</span><span class="p">;</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">active_status</span><span class="p">;</span><span class="w">   </span><span class="c1">-- 7</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">active_status</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'вибув'</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Рекс'</span><span class="p">;</span>
+<span class="c1">-- UPDATE 1</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">active_status</span><span class="p">;</span><span class="w">   </span><span class="c1">-- 6</span>
+</code></pre></div>
+<p>Рекс не видалений: у таблиці <code>animals</code> він є зі статусом «вибув» і тепер
+видний у поданні <code>animals_left</code>. Але з <code>active_status</code> він зник, бо
+більше не відповідає умові <code>WHERE</code>. Так само зникне й рядок, у якому
+помилилися: для того, хто працює лише з поданням, запис просто пропаде.</p>
+<p>Щоб через подання не можна було записати рядок, який з нього випаде, у
+кінці подання додають <code>WITH CHECK OPTION</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="k">REPLACE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">active_status</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'на обліку'</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="k">OPTION</span><span class="p">;</span>
+
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">active_status</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'вибув'</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Барсик'</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ERROR:  new row violates check option for view "active_status"
+DETAIL:  Failing row contains (2, Барсик, кіт, 5, вибув, 1).
+</code></pre></div>
+<p>Нічого не змінилося: Барсик досі на обліку. Так само перевіряється
+<code>INSERT</code>: якби <code>animals_left</code> мало <code>WITH CHECK OPTION</code>, Тимко з
+розділу 4 туди не потрапив би (<code>new row violates check option for view
+"animals_left"</code>). Якщо тварина справді вибула, статус змінюють командою
+<code>UPDATE</code> до самої таблиці <code>animals</code>.</p>
+<h2 id="7-create-or-replace-view">7. CREATE OR REPLACE VIEW і його обмеження<a class="headerlink" href="#7-create-or-replace-view" title="Permanent link">&para;</a></h2>
+<p>Змінити подання можна без <code>DROP VIEW</code> – командою «створити або
+замінити». Додамо в <code>animals_active</code> номер власника:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="k">REPLACE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">animals_active</span><span class="w"> </span><span class="k">AS</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">owner_id</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">animals</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'на обліку'</span><span class="p">;</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_active</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> id |  name  | species | age | owner_id
+----+--------+---------+-----+----------
+  1 | Мурка  | кіт     |   4 |        1
+  2 | Барсик | кіт     |   5 |        1
+  4 | Пушок  | хом'як  |   1 |        3
+  5 | Джек   | собака  |   1 |
+  6 | Соня   | кіт     |   2 |
+  7 | Тимко  | кіт     |   4 |
+</code></pre></div>
+<p>Рекса немає – він вибув; Мурці 4 роки після <code>UPDATE</code> через подання.
+Так само можна змінити умову <code>WHERE</code>.</p>
+<p>Але PostgreSQL зіставляє колонки старого і нового подання <strong>за
+порядком</strong>, тому нові колонки можна додавати лише в кінець:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="k">REPLACE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">animals_active</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">owner_id</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'на обліку'</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ERROR:  cannot change name of view column "name" to "species"
+HINT:  Use ALTER VIEW ... RENAME COLUMN ... to change name of view column instead.
+</code></pre></div>
+<p>Прибрати колонку теж не можна (<code>ERROR:  cannot drop columns from view</code>),
+як і змінити її тип (<code>age::text</code> дає <code>cannot change data type of view
+column "age" from integer to text</code>). Якщо подання треба перебудувати
+радикально, його видаляють і створюють заново.</p>
+<h2 id="8">8. Залежності між поданнями<a class="headerlink" href="#8" title="Permanent link">&para;</a></h2>
+<p>Подання може спиратися на інше подання:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">young_active</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_active</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="k">DROP</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">animals_active</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ERROR:  cannot drop view animals_active because other objects depend on it
+DETAIL:  view young_active depends on view animals_active
+HINT:  Use DROP ... CASCADE to drop the dependent objects too.
+</code></pre></div>
+<p>Без <code>animals_active</code> подання <code>young_active</code> перестало б працювати,
+тому PostgreSQL не видаляє його і в <code>DETAIL</code> перелічує залежні об’єкти.
+Так само не видалиться таблиця <code>animals</code>: <code>DROP TABLE animals</code> перелічить
+усі подання над нею і зовнішній ключ <code>visits</code>.</p>
+<p><code>DROP VIEW animals_active CASCADE</code> видалить і залежні подання
+(<code>NOTICE:  drop cascades to view young_active</code>), тож спершу прочитайте
+<code>DETAIL</code>. А от <code>CREATE OR REPLACE VIEW animals_active</code> за наявності
+<code>young_active</code> виконується, якщо не порушує обмежень розділу 7. Тому
+подання змінюють через <code>CREATE OR REPLACE</code>, а не через <code>DROP</code> і
+<code>CREATE</code>.</p>
+<h2 id="9-materialized-view">9. MATERIALIZED VIEW: знімок, а не живий запит<a class="headerlink" href="#9-materialized-view" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="n">MATERIALIZED</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">animals_active_mat</span><span class="w"> </span><span class="k">AS</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'на обліку'</span><span class="p">;</span>
+<span class="c1">-- SELECT 6: запит виконано, шість рядків збережено</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">owner_id</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'Ліна'</span><span class="p">,</span><span class="w"> </span><span class="s1">'собака'</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_active</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">live</span><span class="p">,</span>
+<span class="w">       </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_active_mat</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">snapshot</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> live | snapshot
+------+----------
+    7 |        6
+</code></pre></div>
+<blockquote>
+<p><strong>Матеріалізоване подання (materialized view)</strong> – подання, яке
+зберігає результат свого запиту на диску як знімок. Дані в ньому
+змінюються лише тоді, коли знімок оновлюють командою
+<code>REFRESH MATERIALIZED VIEW</code>.</p>
+</blockquote>
+<p>Під час читання матеріалізоване подання запит не виконує, тому читається
+швидко, але Ліни не бачить. Оновлення:</p>
+<div class="highlight"><pre><span></span><code><span class="n">REFRESH</span><span class="w"> </span><span class="n">MATERIALIZED</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">animals_active_mat</span><span class="p">;</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_active</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">live</span><span class="p">,</span>
+<span class="w">       </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_active_mat</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">snapshot</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> live | snapshot
+------+----------
+    7 |        7
+</code></pre></div>
+<p>Нові дані з’являються в матеріалізованому поданні в момент <code>REFRESH</code>, а
+не в момент <code>INSERT</code>. Знімок займає місце на диску:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">pg_relation_size</span><span class="p">(</span><span class="s1">'animals_active'</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">view_size</span><span class="p">,</span>
+<span class="w">       </span><span class="n">pg_relation_size</span><span class="p">(</span><span class="s1">'animals_active_mat'</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">mat_size</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> view_size | mat_size
+-----------+----------
+         0 |     8192
+</code></pre></div>
+<p>Записувати в матеріалізоване подання не можна:
+<code>INSERT INTO animals_active_mat ...</code> дає
+<code>ERROR:  cannot change materialized view "animals_active_mat"</code>.
+Подання, створене з <code>WITH NO DATA</code>, до першого <code>REFRESH</code> не читається
+(<code>materialized view ... has not been populated</code>).</p>
+<h2 id="10-refresh-concurrently">10. Матеріалізоване подання для підсумків. REFRESH і CONCURRENTLY<a class="headerlink" href="#10-refresh-concurrently" title="Permanent link">&para;</a></h2>
+<p>Знімок зазвичай роблять не з копії рядків, а з <strong>підсумків</strong>, які дорого
+рахувати щоразу. Звіт для керівника: скільки прийомів провів кожен
+лікар і коли останній:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="n">MATERIALIZED</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">vet_stats</span><span class="w"> </span><span class="k">AS</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+<span class="w">       </span><span class="k">COUNT</span><span class="p">(</span><span class="n">vi</span><span class="p">.</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">visits_count</span><span class="p">,</span>
+<span class="w">       </span><span class="k">MAX</span><span class="p">(</span><span class="n">vi</span><span class="p">.</span><span class="n">visit_date</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">last_visit</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">vets</span><span class="w"> </span><span class="n">v</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">visits</span><span class="w"> </span><span class="n">vi</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">vi</span><span class="p">.</span><span class="n">vet_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">id</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">vet_stats</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> id |    name     | visits_count | last_visit
+----+-------------+--------------+------------
+  1 | Олена Бойко |            2 | 2026-10-01
+  2 | Ігор Савчук |            1 | 2026-09-15
+</code></pre></div>
+<p>Новий прийом: Барсик у хірурга Савчука.</p>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">visits</span><span class="w"> </span><span class="p">(</span><span class="n">animal_id</span><span class="p">,</span><span class="w"> </span><span class="n">vet_id</span><span class="p">,</span><span class="w"> </span><span class="n">visit_date</span><span class="p">,</span><span class="w"> </span><span class="n">diagnosis</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s1">'2026-10-20'</span><span class="p">,</span><span class="w"> </span><span class="s1">'огляд'</span><span class="p">);</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">vet_stats</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="p">;</span><span class="w">   </span><span class="c1">-- у Савчука досі 1 прийом</span>
+
+<span class="n">REFRESH</span><span class="w"> </span><span class="n">MATERIALIZED</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">vet_stats</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">vet_stats</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> id |    name     | visits_count | last_visit
+----+-------------+--------------+------------
+  1 | Олена Бойко |            2 | 2026-10-01
+  2 | Ігор Савчук |            2 | 2026-10-20
+</code></pre></div>
+<p>Вбудованого планувальника в PostgreSQL немає: <code>REFRESH</code> запускають
+вручну або за розкладом зовнішньою програмою (системний cron,
+розширення pg_cron). <code>REFRESH</code> щоразу перераховує весь запит, а не лише
+змінені рядки.</p>
+<p>Звичайний <code>REFRESH</code> на час перебудови <strong>блокує читання</strong> подання. Якщо
+в одному вікні Query Tool виконати <code>REFRESH MATERIALIZED VIEW vet_stats</code>
+у незавершеній транзакції, то в другому:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SET</span><span class="w"> </span><span class="n">lock_timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'1s'</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">vet_stats</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ERROR:  canceling statement due to lock timeout
+</code></pre></div>
+<p><code>REFRESH MATERIALIZED VIEW CONCURRENTLY</code> будує новий знімок поруч зі
+старим і переносить лише відмінності; читачі весь цей час бачать старий
+знімок. Для цього потрібен унікальний індекс, без нього:</p>
+<div class="highlight"><pre><span></span><code><span class="n">REFRESH</span><span class="w"> </span><span class="n">MATERIALIZED</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">CONCURRENTLY</span><span class="w"> </span><span class="n">vet_stats</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ERROR:  cannot refresh materialized view "public.vet_stats" concurrently
+HINT:  Create a unique index with no WHERE clause on one or more columns of the materialized view.
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">vet_stats</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="n">REFRESH</span><span class="w"> </span><span class="n">MATERIALIZED</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">CONCURRENTLY</span><span class="w"> </span><span class="n">vet_stats</span><span class="p">;</span>
+<span class="c1">-- виконується; SELECT з іншого вікна читає без очікування</span>
+</code></pre></div>
+<p><code>id</code> лікаря в кожному рядку звіту різний; ім’я гірше, бо може
+повторитися. Звичайний, не унікальний індекс не підійде.</p>
+<h2 id="11">11. Звичайне чи матеріалізоване. Видалення подань<a class="headerlink" href="#11" title="Permanent link">&para;</a></h2>
+<p>Вибір зводиться до одного питання: чи можна показувати дані із
+запізненням заради швидкості?</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>VIEW</code></th>
+<th><code>MATERIALIZED VIEW</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Що зберігає</td>
+<td>лише текст запиту</td>
+<td>результат на диску</td>
+</tr>
+<tr>
+<td>Свіжість даних</td>
+<td>завжди актуальні</td>
+<td>на момент останнього <code>REFRESH</code></td>
+</tr>
+<tr>
+<td>Запис</td>
+<td>через просте подання</td>
+<td>неможливий</td>
+</tr>
+<tr>
+<td>Типове застосування</td>
+<td>скоротити запит, сховати колонки</td>
+<td>дорогі підсумки, які часто читають</td>
+</tr>
+</tbody>
+</table>
+<p>Для кожного виду – своя команда видалення:</p>
+<div class="highlight"><pre><span></span><code><span class="k">DROP</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">young_active</span><span class="p">;</span>
+<span class="k">DROP</span><span class="w"> </span><span class="n">MATERIALIZED</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">animals_active_mat</span><span class="p">;</span>
+
+<span class="k">DROP</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">vet_stats</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ERROR:  "vet_stats" is not a view
+HINT:  Use DROP MATERIALIZED VIEW to remove a materialized view.
+</code></pre></div>
+<p>Навпаки так само: <code>DROP MATERIALIZED VIEW</code> для звичайного подання
+відповідає <code>is not a materialized view</code> з підказкою <code>DROP VIEW</code>.
+<code>CREATE OR REPLACE</code> для матеріалізованого подання немає:
+<code>CREATE OR REPLACE VIEW vet_stats ...</code> дає <code>"vet_stats" is not a view</code>,
+тож його видаляють і створюють заново. Таблиці <code>DROP</code> не чіпає: в
+<code>animals</code> так само вісім тварин.</p>
+<p>Перелік подань – у системних каталогах:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">viewname</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_views</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">schemaname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'public'</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">matviewname</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_matviews</span><span class="p">;</span>
+</code></pre></div>
+<h2 id="12">12. Запитання для самоперевірки<a class="headerlink" href="#12" title="Permanent link">&para;</a></h2>
+<p><strong>Чи займає звичайне подання місце на диску під власні дані?</strong></p>
+<p>Ні, воно зберігає лише текст запиту (<code>pg_relation_size</code> = 0). Дані
+щоразу читаються з базових таблиць.</p>
+<p><strong>Чому рядок, доданий через подання, може в ньому не з’явитися?</strong></p>
+<p>Колонки, яких немає в поданні, отримують <code>DEFAULT</code> або <code>NULL</code>, а не
+значення з умови <code>WHERE</code>. Якщо новий рядок не відповідає умові,
+подання його не показує.</p>
+<p><strong>Чому <code>INSERT</code> у подання, що поєднує дві таблиці через <code>JOIN</code>, не
+виконується?</strong></p>
+<p>PostgreSQL не знає, у яку таблицю й колонки записувати значення. Такі
+подання автоматично доступні лише для читання.</p>
+<p><strong>Що додає <code>WITH CHECK OPTION</code> до простого подання?</strong></p>
+<p>Забороняє вставляти чи змінювати рядки так, щоб вони перестали
+відповідати умові <code>WHERE</code> подання. Без нього змінений рядок просто
+зникає з подання.</p>
+<p><strong>Чому <code>DROP VIEW</code> на подання, яке використовує інше подання,
+завершується помилкою?</strong></p>
+<p>Залежне подання перестало б працювати. Видалити обидва разом можна
+командою <code>DROP VIEW ... CASCADE</code>; змінити подання, не видаляючи
+залежних, – через <code>CREATE OR REPLACE VIEW</code>.</p>
+<p><strong>Матеріалізоване подання показує вчорашні дані. Як це виправити?</strong></p>
+<p>Виконати <code>REFRESH MATERIALIZED VIEW</code>. Щоб оновлення не блокувало
+читачів, потрібен унікальний індекс і варіант <code>CONCURRENTLY</code>.</p>
+<h2 id="_2">Підсумок<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Подання – збережений запит під іменем (синонім – представлення);
+  власних даних не має і щоразу показує актуальний стан таблиць.</li>
+<li>У поданні зручно сховати <code>LEFT JOIN</code>, <code>COALESCE</code>, підсумки й зайві
+  колонки; з поданням працюють, як з таблицею.</li>
+<li>Через просте подання (одна таблиця, без <code>JOIN</code>, <code>GROUP BY</code>,
+  <code>DISTINCT</code>) можна виконувати <code>INSERT</code>, <code>UPDATE</code> і <code>DELETE</code>; колонки
+  поза поданням отримують <code>DEFAULT</code> або <code>NULL</code>, а не значення з <code>WHERE</code>.</li>
+<li>Записаний через подання рядок може в ньому не з’явитися або зникнути
+  з нього після <code>UPDATE</code>; <code>WITH CHECK OPTION</code> такі записи забороняє.</li>
+<li><code>CREATE OR REPLACE VIEW</code> змінює запит і додає колонки лише в кінець;
+  від подання можуть залежати інші, тоді <code>DROP</code> – лише з <code>CASCADE</code>.</li>
+<li>Матеріалізоване подання – знімок на диску; оновлюється лише
+  командою <code>REFRESH</code>, яка блокує читання; <code>CONCURRENTLY</code> не блокує, але
+  потребує унікального індексу.</li>
+</ul>
+<p><strong>Практика до цієї лекції:</strong> <a href="../../practice/20-views/">Практика 20. Створення та застосування Views у PostgreSQL</a></p>
+<h2 id="_3">Рекомендована література<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>Ужгородський національний університет, інженерно-технічний факультет (уклад.). <em>Організація баз даних: Робота з базами даних. Методичні вказівки і завдання до лабораторних робіт.</em> – Ужгород: ДВНЗ «Ужгородський національний університет», 2021 (<a href="https://www.uzhnu.edu.ua/en/infocentre/get/42933">відкритий доступ</a>). Лабораторна робота 5 – CREATE VIEW, вкладені представлення.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Повернутись нагору
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "search.suggest"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0456\u0439\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u0421\u043a\u043e\u043f\u0456\u044e\u0432\u0430\u0442\u0438 \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0429\u0435 1 \u0437\u0431\u0456\u0433 \u043d\u0430 \u0446\u0456\u0439 \u0441\u0442\u043e\u0440\u0456\u043d\u0446\u0456", "search.result.more.other": "\u0429\u0435 # \u0437\u0431\u0456\u0433\u0456\u0432 \u043d\u0430 \u0446\u0456\u0439 \u0441\u0442\u043e\u0440\u0456\u043d\u0446\u0456", "search.result.none": "\u0417\u0431\u0456\u0433\u0456\u0432 \u043d\u0435 \u0437\u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u0417\u043d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0437\u0431\u0456\u0433", "search.result.other": "\u0417\u043d\u0430\u0439\u0434\u0435\u043d\u043e # \u0437\u0431\u0456\u0433\u0456\u0432", "search.result.placeholder": "\u0420\u043e\u0437\u043f\u043e\u0447\u043d\u0456\u0442\u044c \u043f\u0438\u0441\u0430\u0442\u0438 \u0434\u043b\u044f \u043f\u043e\u0448\u0443\u043a\u0443", "search.result.term.missing": "\u041d\u0435 \u0437\u043d\u0430\u0439\u0434\u0435\u043d\u043e \u0437\u0430\u043f\u0438\u0442\u0443", "select.version": "\u041e\u0431\u0440\u0430\u0442\u0438 \u0432\u0435\u0440\u0441\u0456\u044e"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+    
+  </body>
+</html>

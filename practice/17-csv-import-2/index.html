@@ -1,0 +1,3279 @@
+
+<!doctype html>
+<html lang="uk" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Матеріали лекцій і практичних занять курсу">
+      
+      
+        <meta name="author" content="Анатолій Куротич, Роман Боба">
+      
+      
+      
+        <link rel="prev" href="../16-csv-import/">
+      
+      
+        <link rel="next" href="../18-generated-columns/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>17. Виконання завдань з імпорту даних із CSV у SQLite - Бази даних в інформаційних системах</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#17-csv-sqlite" class="md-skip">
+          Перейти до змісту
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Хедер">
+    <a href="../.." title="Бази даних в інформаційних системах" class="md-header__button md-logo" aria-label="Бази даних в інформаційних системах" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Бази даних в інформаційних системах
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              17. Виконання завдань з імпорту даних із CSV у SQLite
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Темна тема"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Темна тема" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Світла тема"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Світла тема" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Пошук" placeholder="Пошук" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Шукати">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистити" aria-label="Очистити" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Пошук розпочато
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Курс
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../lectures/01-vstup/" class="md-tabs__link">
+          
+  
+  
+  Лекції
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../01-sqlite-create/" class="md-tabs__link">
+          
+  
+  
+  Практичні
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../independent-study/" class="md-tabs__link">
+          
+  
+  
+  Самостійна робота
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://my-cd-rom.github.io/data-bases-course/lapa/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Тренажер SQL
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навігація" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Бази даних в інформаційних системах" class="md-nav__button md-logo" aria-label="Бази даних в інформаційних системах" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Бази даних в інформаційних системах
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Курс
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Лекції
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Лекції
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/01-vstup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Вступ. Що таке база даних? Архітектура СУБД. Типи баз даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/02-sqlite-create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Створення бази даних у SQLite: CLI, SQLiteBrowser. Типи даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/03-select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Вибірка даних з таблиць: SELECT, LIMIT, WHERE, NOT NULL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/04-er-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Рівні проєктування баз даних. ER-діаграми
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/05-insert-keys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Вставка даних (INSERT). Первинні та зовнішні ключі
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/06-constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Обмеження цілісності даних (NOT NULL, UNIQUE, CHECK, DEFAULT) та оновлення й видалення записів (UPDATE, DELETE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/07-joins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Об'єднання таблиць: INNER, LEFT, RIGHT, CROSS JOIN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/08-aggregate-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Агрегатні функції: AVG, COUNT, MIN, MAX, SUM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/09-group-by/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Групування даних (GROUP BY). Відбір груп (HAVING)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/10-sorting-filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Сортування та фільтрація: ORDER BY, DISTINCT, BETWEEN, IN, LIKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/11-formatting-queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Запити форматування таблиць
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/12-transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Транзакції у SQLite: BEGIN, COMMIT, ROLLBACK. Принципи ACID. Управління блокуваннями
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/13-indexes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Індекси в SQLite. Оптимізація запитів, EXPLAIN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/14-generated-columns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Згенеровані стовпці: VIRTUAL і STORED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/15-postgres-intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. Перехід до PostgreSQL. Використання PgAdmin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/16-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. Подання (VIEW) і матеріалізовані подання (MATERIALIZED VIEW)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/17-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. Функції у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/18-triggers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. Тригери (Triggers) у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Практичні
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Практичні
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-sqlite-create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Створення бази даних у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Формування запитів вибірки у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-er-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Створення ER-діаграм для заданих прикладів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-insert-keys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Додавання записів, встановлення ключів і зв'язків
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Обмеження цілісності даних: NOT NULL, UNIQUE, CHECK, DEFAULT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-update-delete/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Робота з командами оновлення та видалення у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-joins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Запити з різними видами об'єднання таблиць у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-aggregate-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Застосування агрегатних функцій
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-group-by/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Формування запитів з групуванням даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-having/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Відбір груп за допомогою HAVING
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11-combined-tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Комбіновані завдання з групуванням та відбором даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12-sorting-filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Сортування та фільтрація даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13-formatting-queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Форматування таблиць
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14-transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Створення та відкат транзакцій у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15-indexes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. Створення індексів та аналіз ефективності запитів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16-csv-import/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. Імпорт даних з CSV в SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. Виконання завдань з імпорту даних із CSV у SQLite
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. Виконання завдань з імпорту даних із CSV у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Зміст">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Зміст
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Теорія
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Теорія">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-import" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Попередження .import не зупиняють імпорт
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Роздільник: кома чи крапка з комою
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-null" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Порожні поля: порожній рядок замість NULL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Дублікати
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Заголовок і типи колонок
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Кодування
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Контрольний список перевірки
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-db-browser-for-sqlite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Імпорт через DB Browser for SQLite
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Експорт: із таблиці назад у CSV
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Варіант
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Приклад: наскрізна демонстрація
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Завдання
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Що здати й оцінюється
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Підсумок заняття
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендована література
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18-generated-columns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. Створення та використання згенерованих стовпців у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19-postgres-intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    19. Створення бази даних у PostgreSQL (PgAdmin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    20. Створення та застосування Views у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../21-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    21. Написання функцій у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22-procedures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    22. Створення та використання процедур у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../23-procedures-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    23. Виконання завдань зі створення процедур у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../24-triggers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    24. Реалізація тригерів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Самостійна робота
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Самостійна робота
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Огляд і графік
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://my-cd-rom.github.io/data-bases-course/lapa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Тренажер SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Зміст">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Зміст
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Теорія
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Теорія">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-import" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Попередження .import не зупиняють імпорт
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Роздільник: кома чи крапка з комою
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-null" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Порожні поля: порожній рядок замість NULL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Дублікати
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Заголовок і типи колонок
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Кодування
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Контрольний список перевірки
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-db-browser-for-sqlite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Імпорт через DB Browser for SQLite
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Експорт: із таблиці назад у CSV
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Варіант
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Приклад: наскрізна демонстрація
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Завдання
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Що здати й оцінюється
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Підсумок заняття
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендована література
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="17-csv-sqlite">Практика 17. Імпорт даних із CSV у SQLite: типові проблеми, перевірка й експорт<a class="headerlink" href="#17-csv-sqlite" title="Permanent link">&para;</a></h1>
+<p><em>Мета заняття: навчитися розпізнавати й виправляти типові проблеми
+«брудного» CSV-файлу (інший роздільник, порожні поля, дублікати,
+заголовок, кодування), перевіряти якість даних у проміжній таблиці
+перед перенесенням, імпортувати файл через майстер DB Browser for
+SQLite і вивантажувати результат запиту назад у CSV. Практика
+продовжує <a href="../16-csv-import/">практику 16</a>: проміжна таблиця й
+<code>INSERT ... SELECT</code> звідти вважаються відомими. Окремої лекції з цієї
+теми немає, теорію наведено нижче на цій сторінці.</em></p>
+<h2 id="_1">Теорія<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>На практиці 16 файл був «чистим»: коми, заголовок, усі значення на
+місці. Реальні файли такими бувають рідко. Приклади цього розділу
+продовжують ветклініку з теорії практики 16: таблиця <code>animals</code>
+(<code>id</code>, <code>name</code>, <code>species</code>, <code>age</code>, <code>status</code>) із трьома тваринами і
+файл <code>shelter_animals.csv</code>, який притулок вивантажив з Excel:</p>
+<div class="highlight"><pre><span></span><code>name;species;age;status
+Бублик;собака;3;на обліку
+Ліза;кіт;;на обліку
+Граф;собака;5;на обліку
+Сірко, старший;собака;;на обліку
+Бублик;собака;3;на обліку
+</code></pre></div>
+<p>У файлі три проблеми одразу: роздільник <code>;</code> замість коми, порожній
+вік у двох тварин і Бублик, записаний двічі. Нижче видно, як кожна з
+них проявляється і як її виправити.</p>
+<h3 id="1-import">1. Попередження <code>.import</code> не зупиняють імпорт<a class="headerlink" href="#1-import" title="Permanent link">&para;</a></h3>
+<p>Якщо кількість полів у записі не збігається з кількістю колонок
+таблиці, <code>.import</code> не відмовляється працювати, а лише друкує
+попередження й вставляє рядок як вийде:</p>
+<ul>
+<li><code>expected 4 columns but found 1 - filling the rest with NULL</code>:
+  полів менше, ніж колонок, решта колонок отримує <code>NULL</code>;</li>
+<li><code>expected 4 columns but found 5 - extras ignored</code>: полів більше,
+  зайві відкидаються.</li>
+</ul>
+<p>Тому після кожного імпорту читайте всі повідомлення CLI і дивіться
+вміст проміжної таблиці, а не лише на те, що «помилки не було».</p>
+<h3 id="2">2. Роздільник: кома чи крапка з комою<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<p>Excel з українськими регіональними налаштуваннями зберігає CSV із
+крапкою з комою, бо кома в цих налаштуваннях є десятковим знаком.
+Імпорт такого файлу в режимі <code>.mode csv</code> дає попередження на кожен
+запис:</p>
+<div class="highlight"><pre><span></span><code>shelter_animals.csv:2: expected 4 columns but found 1 - filling the rest with NULL
+shelter_animals.csv:3: expected 4 columns but found 1 - filling the rest with NULL
+shelter_animals.csv:4: expected 4 columns but found 1 - filling the rest with NULL
+shelter_animals.csv:5: expected 4 columns but found 2 - filling the rest with NULL
+shelter_animals.csv:6: expected 4 columns but found 1 - filling the rest with NULL
+</code></pre></div>
+<p><code>COUNT(*)</code> проміжної таблиці при цьому дорівнює 5, ніби все гаразд,
+але кожен запис цілком опинився в колонці <code>name</code>
+(<code>Бублик;собака;3;на обліку</code>), а решта колонок порожні. Запис
+<code>Сірко, старший</code> розпався по комі на два поля. Виправлення: після
+<code>.mode csv</code> задати роздільник командою <code>.separator</code>:</p>
+<div class="highlight"><pre><span></span><code>.mode csv
+.separator ";"
+.import --skip 1 shelter_animals.csv animals_staging
+</code></pre></div>
+<p>Крапку з комою беріть у лапки. Консоль <code>sqlite3</code> 3.53 і новіші
+сприймають <code>;</code> у кінці дот-команди як її завершення, відповідають
+<code>Usage: .separator COL ?ROW?</code> і лишають роздільник-кому. Запис
+<code>.separator ";"</code> працює в усіх версіях.</p>
+<p>Тепер попереджень немає, і кожне значення стоїть у своїй колонці. У
+файлі з <code>;</code> кома всередині значення (<code>Сірко, старший</code>) лапок не
+потребує, а от значення, що містить <code>;</code>, треба було б узяти в лапки.</p>
+<p><code>.separator</code> діє і на виведення результатів, доки ви не виконаєте
+<code>.mode csv</code> знову: ця команда повертає роздільник-кому. Про це варто
+пам’ятати перед експортом (розділ 9).</p>
+<h3 id="3-null">3. Порожні поля: порожній рядок замість <code>NULL</code><a class="headerlink" href="#3-null" title="Permanent link">&para;</a></h3>
+<p>Порожнє поле (<code>;;</code>) імпортується не як <code>NULL</code>, а як порожній рядок
+<code>''</code>. Це видно функцією <code>typeof()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">typeof</span><span class="p">(</span><span class="n">age</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_staging</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>     name       age  typeof(age)
+--------------  ---  -----------
+Бублик            3  integer
+Ліза                 text
+Граф              5  integer
+Сірко, старший       text
+Бублик            3  integer
+</code></pre></div>
+<p>Для бази <code>''</code> і <code>NULL</code> є різними речами: <code>COUNT(age)</code> рахує порожній
+рядок як значення, а <code>AVG(age)</code> вважає його нулем. Запит
+<code>SELECT COUNT(*), COUNT(age), AVG(age) FROM animals_staging;</code> дає
+<code>5</code>, <code>5</code> і <code>2.2</code> замість правильних <code>5</code>, <code>3</code> і приблизно <code>3.67</code>. Тому під час
+перенесення порожні рядки перетворюють на <code>NULL</code> функцією <code>NULLIF</code>:
+<code>NULLIF(a, b)</code> повертає <code>NULL</code>, якщо <code>a = b</code>, і <code>a</code> в іншому разі.</p>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="k">NULLIF</span><span class="p">(</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="s1">''</span><span class="p">),</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_staging</span><span class="p">;</span>
+</code></pre></div>
+<p>Якщо ж колонка в цільовій таблиці оголошена як <code>NOT NULL</code>, така
+вставка завершиться помилкою <code>NOT NULL constraint failed</code>, і вся
+команда <code>INSERT ... SELECT</code> не додасть <strong>жодного</strong> рядка. Вигадувати
+значення в такому разі не можна: переносять лише повні рядки
+(<code>WHERE колонка &lt;&gt; ''</code>), а неповні відкладають і повідомляють
+власникові даних.</p>
+<p>Щоб не перевіряти колонки по одній, порожні значення в усіх колонках
+можна порахувати одним запитом (порівняння <code>name = ''</code> дає 1 або 0):</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">name_empty</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">species</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">species_empty</span><span class="p">,</span>
+<span class="w">       </span><span class="k">SUM</span><span class="p">(</span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">age_empty</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">status_empty</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">animals_staging</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>name_empty  species_empty  age_empty  status_empty
+----------  -------------  ---------  ------------
+         0              0          2             0
+</code></pre></div>
+<h3 id="4">4. Дублікати<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<p>SQLite не перевіряє, чи такий рядок уже був: однакові записи файлу
+перетворяться на однакові рядки таблиці, кожен зі своїм <code>id</code>. Шукати
+їх зручно в проміжній таблиці, групуючи за всіма колонками
+(практика 10):</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">cnt</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">animals_staging</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">status</span>
+<span class="k">HAVING</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> name   species  age   status    cnt
+------  -------  ---  ---------  ---
+Бублик  собака     3  на обліку    2
+</code></pre></div>
+<p>Повністю однакові рядки прибирає <code>SELECT DISTINCT</code> під час
+перенесення. Друге джерело дублікатів: той самий файл імпортують
+повторно. Рядки проміжної таблиці, які вже є в цільовій, знаходить
+<code>EXISTS</code>: умова <code>EXISTS (підзапит)</code> істинна, якщо вкладений <code>SELECT</code>
+повернув хоча б один рядок. Тут для кожного рядка проміжної таблиці <code>s</code>
+підзапит шукає в <code>animals</code> тварину з тим самим іменем і видом:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">name</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">animals_staging</span><span class="w"> </span><span class="n">s</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="n">a</span>
+<span class="w">              </span><span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">species</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">species</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="5">5. Заголовок і типи колонок<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<p>Забутий <code>--skip 1</code> під час імпорту в наявну таблицю перетворює
+заголовок на звичайний рядок даних (теорія практики 16). Інша
+ситуація: таблиці ще немає. Тоді <code>.import</code> створює її сам і бере назви
+колонок з першого рядка файлу. У консолі <code>sqlite3</code> 3.46 (ця сама версія
+SQLite вбудована в DB Browser for SQLite 3.13) усі колонки отримують
+тип <code>TEXT</code>:</p>
+<div class="highlight"><pre><span></span><code>.mode csv
+.separator ";"
+.import shelter_animals.csv fresh
+.schema fresh
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>CREATE TABLE IF NOT EXISTS "fresh"(
+"name" TEXT, "species" TEXT, "age" TEXT, "status" TEXT);
+</code></pre></div>
+<p>Числа тоді зберігаються як текст, і <code>ORDER BY age</code> сортує їх
+посимвольно (<code>'10'</code> опиниться перед <code>'5'</code>). В інших версіях консолі
+результат інший: 3.53 створює колонки зовсім без типу (числа
+лишаються текстом), а 3.54 оголошує їх як <code>"age" ANY</code> і зберігає числа
+як числа. Тож на типи колонок у створеній автоматично таблиці
+покладатися не можна: перевіряйте їх командою <code>.schema</code> і функцією
+<code>typeof()</code>. Якщо ж до неіснуючої таблиці додати <code>--skip 1</code>,
+пропущеним виявиться заголовок, і назвами колонок стане перший запис
+(<code>"Бублик" TEXT, "собака" TEXT, ...</code>), а сам Бублик у дані не
+потрапить. Тому проміжну таблицю
+створюйте самі, з потрібними типами, і тоді використовуйте
+<code>--skip 1</code>.</p>
+<h3 id="6">6. Кодування<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<p>SQLite очікує файл у кодуванні UTF-8. Файл, збережений у старому
+кодуванні Windows-1251, після імпорту перетворює кирилицю на
+нечитабельні знаки. У Excel обирайте тип файлу <strong>CSV UTF-8</strong>, а в
+текстовому редакторі перевіряйте кодування перед імпортом. Невидиму
+позначку на початку UTF-8 файлу (BOM), яку додає Excel, CLI
+<code>sqlite3</code> розпізнає й пропускає сам.</p>
+<h3 id="7">7. Контрольний список перевірки<a class="headerlink" href="#7" title="Permanent link">&para;</a></h3>
+<p>Перед перенесенням у цільову таблицю перевірте проміжну:</p>
+<ol>
+<li><code>COUNT(*)</code> проміжної таблиці дорівнює кількості <strong>записів</strong> у файлі
+   (а не кількості рядків тексту: значення в лапках може містити
+   переведення рядка).</li>
+<li>Значення стоять у своїх колонках (<code>SELECT * ... LIMIT 5</code>).</li>
+<li>Порожні рядки: запит із <code>SUM(колонка = '')</code> з розділу 3.</li>
+<li>Типи: <code>typeof(колонка)</code> з групуванням для числових колонок.</li>
+<li>Дублікати: <code>GROUP BY</code> за всіма колонками з <code>HAVING COUNT(*) &gt; 1</code>.</li>
+</ol>
+<p>Після перенесення приріст <code>COUNT(*)</code> цільової таблиці має дорівнювати
+кількості рядків, які ви вирішили перенести (без дублікатів і
+відкладених рядків), а <code>WHERE колонка IS NULL</code> має знайти саме ті
+рядки, де в файлі було порожнє поле.</p>
+<h3 id="8-db-browser-for-sqlite">8. Імпорт через DB Browser for SQLite<a class="headerlink" href="#8-db-browser-for-sqlite" title="Permanent link">&para;</a></h3>
+<p>Майстер <strong>File, Import, Table from CSV file...</strong> робить те саме, що
+<code>.import</code>, але з налаштуваннями у вікні:</p>
+<ul>
+<li><strong>Table name</strong>: назва нової таблиці, наприклад <code>animals_staging</code>;</li>
+<li><strong>Column names in first line</strong>: позначка означає, що перший рядок
+  є заголовком (аналог <code>--skip 1</code> з назвами колонок із файлу);</li>
+<li><strong>Field separator</strong>: роздільник; для файлу з Excel оберіть <code>;</code>;</li>
+<li><strong>Quote character</strong>: символ лапок, зазвичай <code>"</code>;</li>
+<li><strong>Encoding</strong>: кодування, для українських даних UTF-8.</li>
+</ul>
+<p>Залежно від версії DB Browser майстер може записувати порожні поля як
+<code>NULL</code>, а не як порожній рядок <code>''</code>. Тоді в перевірках розділу 3 замість
+<code>колонка = ''</code> шукайте <code>колонка IS NULL</code>, а <code>NULLIF</code> у перенесенні
+лишається безпечним.</p>
+<p>Унизу вікна є попередній перегляд: якщо всі значення злилися в одну
+колонку, роздільник обрано неправильно. Майстер створює <strong>нову</strong>
+таблицю, тому далі, як і на практиці 16, перевірки й
+<code>INSERT ... SELECT</code> виконуються у вкладці <strong>Execute SQL</strong>.</p>
+<h3 id="9-csv">9. Експорт: із таблиці назад у CSV<a class="headerlink" href="#9-csv" title="Permanent link">&para;</a></h3>
+<p>Ті самі дот-команди працюють і у зворотний бік:</p>
+<div class="highlight"><pre><span></span><code>.headers on
+.mode csv
+.output animals_export.csv
+SELECT id, name, species, age FROM animals WHERE id &gt; 3;
+.output stdout
+</code></pre></div>
+<p><code>.headers on</code> додає рядок заголовків, <code>.mode csv</code> задає формат і
+роздільник-кому, <code>.output файл</code> перенаправляє результат запитів у
+файл замість екрана, а <code>.output stdout</code> повертає виведення на екран
+(без неї результати всіх наступних запитів теж підуть у файл). У
+файл потрапляє результат <strong>будь-якого</strong> <code>SELECT</code>: таблиця цілком,
+відфільтрована вибірка чи підсумковий звіт. Вміст файлу:</p>
+<div class="highlight"><pre><span></span><code>id,name,species,age
+4,"Бублик","собака",3
+5,"Ліза","кіт",
+6,"Граф","собака",5
+7,"Сірко, старший","собака",
+</code></pre></div>
+<p>Текстові значення SQLite бере в лапки автоматично (тому кома в
+<code>"Сірко, старший"</code> не розриває поле), числа пише без лапок, а <code>NULL</code>
+записує як порожнє поле. Тобто якщо цей
+файл імпортувати знову, <code>NULL</code> повернеться порожнім рядком, і
+<code>NULLIF</code> знадобиться ще раз. У DB Browser експорт виконує
+<strong>File, Export, Table(s) as CSV file...</strong>.</p>
+<h2 id="_2">Варіант<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Той самий варіант і той самий файл <code>.db</code>, що на практиці 16, і та сама
+цільова таблиця (для варіанта 9 це <code>courses</code>). Для кожного варіанта
+підготовлено файл <code>v{N}_raw_rows.csv</code>: вивантаження з Excel партнера,
+10 записів для цільової таблиці, без колонки <code>id</code>. У файлі навмисно
+закладено <strong>три</strong> типові проблеми з теорії вище; знайти, описати й
+виправити їх є частиною завдання. Кожен запис файлу описує окремий
+новий об’єкт, тож однакових записів у правильному файлі бути не
+повинно. Виняток лише варіант 6: там вважайте, що партнер вивантажив
+один і той самий номер двічі.</p>
+<ul>
+<li><a href="../csv/17-csv-import-2/v1_raw_rows.csv">v1_raw_rows.csv</a>: Бібліотека (<code>books</code>)</li>
+<li><a href="../csv/17-csv-import-2/v2_raw_rows.csv">v2_raw_rows.csv</a>: Інтернет-магазин одягу (<code>products</code>)</li>
+<li><a href="../csv/17-csv-import-2/v3_raw_rows.csv">v3_raw_rows.csv</a>: Кінотеатр (<code>movies</code>)</li>
+<li><a href="../csv/17-csv-import-2/v4_raw_rows.csv">v4_raw_rows.csv</a>: Аптека (<code>medicines</code>)</li>
+<li><a href="../csv/17-csv-import-2/v5_raw_rows.csv">v5_raw_rows.csv</a>: Автосалон (<code>cars</code>)</li>
+<li><a href="../csv/17-csv-import-2/v6_raw_rows.csv">v6_raw_rows.csv</a>: Готель (<code>rooms</code>)</li>
+<li><a href="../csv/17-csv-import-2/v7_raw_rows.csv">v7_raw_rows.csv</a>: Спортзал (<code>memberships</code>)</li>
+<li><a href="../csv/17-csv-import-2/v8_raw_rows.csv">v8_raw_rows.csv</a>: Служба доставки їжі (<code>dishes</code>)</li>
+<li><a href="../csv/17-csv-import-2/v9_raw_rows.csv">v9_raw_rows.csv</a>: Університет (<code>courses</code>)</li>
+<li><a href="../csv/17-csv-import-2/v10_raw_rows.csv">v10_raw_rows.csv</a>: Транспортна компанія (<code>drivers</code>)</li>
+</ul>
+<p>Якщо базу втрачено, відновіть її з <code>v{N}_prerequisites.sql</code>
+<a href="../04-insert-keys/#sql">практики 4</a> (повторно виконавши завдання тієї
+практики); імпорт практики 16 для цієї практики не обов’язковий.</p>
+<h2 id="_3">Приклад: наскрізна демонстрація<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>Повний правильний імпорт файлу <code>shelter_animals.csv</code> з теорії (до
+імпорту в <code>animals</code> 3 тварини, найбільший <code>id</code> дорівнює 3):</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">animals_staging</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="nb">TEXT</span>
+<span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>.mode csv
+.separator ";"
+.import --skip 1 shelter_animals.csv animals_staging
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_staging</span><span class="p">;</span><span class="w">                      </span><span class="c1">-- 5 записів</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals_staging</span><span class="p">);</span><span class="w">  </span><span class="c1">-- 4 унікальні</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="k">NULLIF</span><span class="p">(</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="s1">''</span><span class="p">),</span><span class="w"> </span><span class="n">status</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">animals_staging</span><span class="p">;</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals</span><span class="p">;</span><span class="w">                     </span><span class="c1">-- 7: приріст 4</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">animals</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span><span class="w">   </span><span class="c1">-- 2: Ліза і Сірко</span>
+<span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">animals_staging</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>.headers on
+.mode csv
+.output animals_export.csv
+SELECT id, name, species, age FROM animals WHERE id &gt; 3;
+.output stdout
+</code></pre></div>
+<h2 id="_4">Завдання<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p><strong>Завдання 1. Огляд файлу й «наївний» імпорт.</strong> Відкрийте
+<code>v{N}_raw_rows.csv</code> свого варіанта в текстовому редакторі (не в
+Excel: він приховує роздільники) і порахуйте записи. Створіть
+проміжну таблицю з колонками, що відповідають заголовкам файлу
+(лише назви й типи колонок, як у цільовій таблиці, без <code>NOT NULL</code>,
+<code>DEFAULT</code> і <code>PRIMARY KEY</code>), й імпортуйте файл у неї звичайними
+<code>.mode csv</code> і <code>.import --skip 1</code>, без жодних додаткових налаштувань.
+Зафіксуйте письмово перші три попередження CLI дослівно, значення
+<code>COUNT(*)</code> проміжної таблиці і значення першої колонки в першому
+рядку проміжної таблиці (<code>SELECT * FROM ... LIMIT 1</code>).
+Поясніть причину й очистіть проміжну таблицю (<code>DELETE FROM ...</code>).</p>
+<p><strong>Завдання 2. Правильний імпорт.</strong> Повторіть імпорт з потрібним
+роздільником: у CLI через <code>.separator ";"</code>, або майстром DB Browser for
+SQLite в нову проміжну таблицю (тоді зафіксуйте, які налаштування
+майстра ви змінили). Переконайтеся, що попереджень немає, а
+<code>COUNT(*)</code> проміжної таблиці дорівнює кількості записів у файлі.</p>
+<p><strong>Завдання 3. Контроль якості в проміжній таблиці.</strong> Виконайте
+перевірки з контрольного списку (розділ 7 теорії): порожні рядки в
+кожній колонці, <code>typeof()</code> для числових колонок, пошук дублікатів
+через <code>GROUP BY</code> за всіма колонками з <code>HAVING COUNT(*) &gt; 1</code>. Письмово
+опишіть кожну знайдену проблему (які рядки, які колонки) і обчисліть,
+скільки рядків має додатися до цільової таблиці після виправлення.
+Колонки з <code>NOT NULL</code> визначте командою <code>.schema цільова_таблиця</code>: рядки
+з порожнім значенням у таких колонках відкладаються й до розрахунку
+не входять.</p>
+<p><strong>Завдання 4. Перенесення з виправленням.</strong> Зафіксуйте <code>COUNT(*)</code> і
+<code>MAX(id)</code> цільової таблиці. Перенесіть рядки одним
+<code>INSERT ... SELECT</code>, який прибирає дублікати й перетворює порожні
+рядки на <code>NULL</code>. Якщо вставка падає з <code>NOT NULL constraint failed</code>
+(колонка у вашій таблиці не допускає <code>NULL</code>), не вигадуйте значень:
+перенесіть лише повні рядки й письмово зазначте, які рядки відкладено
+і чому. Підтвердьте, що приріст <code>COUNT(*)</code> збігається з розрахунком
+із Завдання 3, а запит з <code>IS NULL</code> знаходить саме ті рядки, що мали
+порожні поля. Видаліть проміжну таблицю.</p>
+<p><strong>Завдання 5. Експорт у CSV.</strong> Вивантажте в CSV-файл із рядком
+заголовків усі рядки, додані в Завданні 4 (<code>WHERE id &gt; ...</code> зі
+значенням <code>MAX(id)</code> до перенесення), через <code>.headers on</code>,
+<code>.mode csv</code>, <code>.output</code> і <code>.output stdout</code> (або <strong>File, Export</strong> у DB
+Browser). Відкрийте файл у текстовому редакторі й письмово
+зазначте: який у ньому роздільник, як записано значення, що містить
+кому, і як записано <code>NULL</code>. Поясніть, що сталося б із цими <code>NULL</code>,
+якби файл імпортували назад.</p>
+<h2 id="_5">Що здати й оцінюється<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>Здайте <code>lab_work_17.sql</code> (усі виконані команди Завдань 1–5, включно з
+дот-командами, з результатами перевірок), <code>lab_work_17.db</code> (файл бази
+даних після перенесення) і <code>lab_work_17.md</code> (письмові відповіді до
+Завдань 1, 3, 4 і 5, разом із вмістом експортованого CSV-файлу).
+Контрольні питання:</p>
+<ul>
+<li>Чому імпорт файлу з крапкою з комою в режимі <code>.mode csv</code> формально
+  «проходить», але дає неправильний результат, і як це помітити?</li>
+<li>Чому порожнє поле CSV треба перетворювати на <code>NULL</code> і чим загрожує
+  порожній рядок у числовій колонці для агрегатних функцій?</li>
+<li>Чому дублікати й порожні значення краще знаходити в проміжній
+  таблиці, а не вже в цільовій?</li>
+</ul>
+<p>Оцінюється повнота опису трьох проблем файлу (Завдання 1 і 3),
+правильність перенесення: без дублікатів, з <code>NULL</code> замість порожніх
+рядків і з приростом, що збігається з розрахунком (Завдання 4), і
+правильний експорт із поясненням (Завдання 5).</p>
+<h2 id="_6">Підсумок заняття<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Розпізнано на власному файлі типові проблеми CSV: роздільник <code>;</code>,
+  порожні поля, що імпортуються як <code>''</code>, і повторені записи.</li>
+<li>Перевірено якість даних у проміжній таблиці (<code>typeof</code>, порожні
+  рядки, <code>GROUP BY ... HAVING</code>) до перенесення в цільову таблицю.</li>
+<li>Рядки перенесено з <code>SELECT DISTINCT</code> і <code>NULLIF</code>, а результат
+  підтверджено приростом <code>COUNT(*)</code> і запитом з <code>IS NULL</code>.</li>
+<li>Результат запиту вивантажено назад у CSV через <code>.headers on</code>,
+  <code>.mode csv</code> і <code>.output</code>.</li>
+</ul>
+<p><strong>Лекція до цієї практики:</strong> окремої лекції немає, теорію наведено на початку цієї сторінки. <strong>Початок теми:</strong> <a href="../16-csv-import/">Практика 16. Імпорт даних із CSV у SQLite</a></p>
+<h2 id="_7">Рекомендована література<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>Павловський В. І., Петрашенко А. В. <em>Бази даних та засоби управління.</em> Київ: КПІ ім. Ігоря Сікорського, 2024 (<a href="https://ela.kpi.ua/bitstreams/9f26675d-c42f-485e-aab5-13e6e014b560/download">відкритий доступ</a>). Загальний підручник з баз даних і СУБД: розділ про роботу з даними та SQL.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Повернутись нагору
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "search.suggest"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0456\u0439\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u0421\u043a\u043e\u043f\u0456\u044e\u0432\u0430\u0442\u0438 \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0429\u0435 1 \u0437\u0431\u0456\u0433 \u043d\u0430 \u0446\u0456\u0439 \u0441\u0442\u043e\u0440\u0456\u043d\u0446\u0456", "search.result.more.other": "\u0429\u0435 # \u0437\u0431\u0456\u0433\u0456\u0432 \u043d\u0430 \u0446\u0456\u0439 \u0441\u0442\u043e\u0440\u0456\u043d\u0446\u0456", "search.result.none": "\u0417\u0431\u0456\u0433\u0456\u0432 \u043d\u0435 \u0437\u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u0417\u043d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0437\u0431\u0456\u0433", "search.result.other": "\u0417\u043d\u0430\u0439\u0434\u0435\u043d\u043e # \u0437\u0431\u0456\u0433\u0456\u0432", "search.result.placeholder": "\u0420\u043e\u0437\u043f\u043e\u0447\u043d\u0456\u0442\u044c \u043f\u0438\u0441\u0430\u0442\u0438 \u0434\u043b\u044f \u043f\u043e\u0448\u0443\u043a\u0443", "search.result.term.missing": "\u041d\u0435 \u0437\u043d\u0430\u0439\u0434\u0435\u043d\u043e \u0437\u0430\u043f\u0438\u0442\u0443", "select.version": "\u041e\u0431\u0440\u0430\u0442\u0438 \u0432\u0435\u0440\u0441\u0456\u044e"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+    
+  </body>
+</html>

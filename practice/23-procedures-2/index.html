@@ -1,0 +1,3239 @@
+
+<!doctype html>
+<html lang="uk" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Матеріали лекцій і практичних занять курсу">
+      
+      
+        <meta name="author" content="Анатолій Куротич, Роман Боба">
+      
+      
+      
+        <link rel="prev" href="../22-procedures/">
+      
+      
+        <link rel="next" href="../24-triggers/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>23. Виконання завдань зі створення процедур у PostgreSQL - Бази даних в інформаційних системах</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#23-postgresql" class="md-skip">
+          Перейти до змісту
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Хедер">
+    <a href="../.." title="Бази даних в інформаційних системах" class="md-header__button md-logo" aria-label="Бази даних в інформаційних системах" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Бази даних в інформаційних системах
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              23. Виконання завдань зі створення процедур у PostgreSQL
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Темна тема"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Темна тема" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Світла тема"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Світла тема" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Пошук" placeholder="Пошук" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Шукати">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистити" aria-label="Очистити" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Пошук розпочато
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Курс
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../lectures/01-vstup/" class="md-tabs__link">
+          
+  
+  
+  Лекції
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../01-sqlite-create/" class="md-tabs__link">
+          
+  
+  
+  Практичні
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../independent-study/" class="md-tabs__link">
+          
+  
+  
+  Самостійна робота
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://my-cd-rom.github.io/data-bases-course/lapa/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Тренажер SQL
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навігація" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Бази даних в інформаційних системах" class="md-nav__button md-logo" aria-label="Бази даних в інформаційних системах" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Бази даних в інформаційних системах
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Курс
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Лекції
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Лекції
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/01-vstup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Вступ. Що таке база даних? Архітектура СУБД. Типи баз даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/02-sqlite-create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Створення бази даних у SQLite: CLI, SQLiteBrowser. Типи даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/03-select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Вибірка даних з таблиць: SELECT, LIMIT, WHERE, NOT NULL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/04-er-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Рівні проєктування баз даних. ER-діаграми
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/05-insert-keys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Вставка даних (INSERT). Первинні та зовнішні ключі
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/06-constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Обмеження цілісності даних (NOT NULL, UNIQUE, CHECK, DEFAULT) та оновлення й видалення записів (UPDATE, DELETE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/07-joins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Об'єднання таблиць: INNER, LEFT, RIGHT, CROSS JOIN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/08-aggregate-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Агрегатні функції: AVG, COUNT, MIN, MAX, SUM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/09-group-by/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Групування даних (GROUP BY). Відбір груп (HAVING)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/10-sorting-filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Сортування та фільтрація: ORDER BY, DISTINCT, BETWEEN, IN, LIKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/11-formatting-queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Запити форматування таблиць
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/12-transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Транзакції у SQLite: BEGIN, COMMIT, ROLLBACK. Принципи ACID. Управління блокуваннями
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/13-indexes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Індекси в SQLite. Оптимізація запитів, EXPLAIN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/14-generated-columns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Згенеровані стовпці: VIRTUAL і STORED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/15-postgres-intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. Перехід до PostgreSQL. Використання PgAdmin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/16-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. Подання (VIEW) і матеріалізовані подання (MATERIALIZED VIEW)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/17-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. Функції у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lectures/18-triggers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. Тригери (Triggers) у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Практичні
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Практичні
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 1. Основи баз даних і моделювання (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-sqlite-create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Створення бази даних у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Формування запитів вибірки у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-er-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Створення ER-діаграм для заданих прикладів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-insert-keys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Додавання записів, встановлення ключів і зв'язків
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-constraints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Обмеження цілісності даних: NOT NULL, UNIQUE, CHECK, DEFAULT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-update-delete/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Робота з командами оновлення та видалення у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 2. Розширені запити та аналіз даних у SQL (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-joins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Запити з різними видами об'єднання таблиць у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-aggregate-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Застосування агрегатних функцій
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-group-by/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Формування запитів з групуванням даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-having/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Відбір груп за допомогою HAVING
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11-combined-tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Комбіновані завдання з групуванням та відбором даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12-sorting-filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Сортування та фільтрація даних
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13-formatting-queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Форматування таблиць
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 3. Транзакції, індекси та оптимізація запитів, імпорт даних (SQLite)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14-transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. Створення та відкат транзакцій у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15-indexes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. Створення індексів та аналіз ефективності запитів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16-csv-import/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. Імпорт даних з CSV в SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17-csv-import-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17. Виконання завдань з імпорту даних із CSV у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18-generated-columns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18. Створення та використання згенерованих стовпців у SQLite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Модуль 4. Розширені можливості PostgreSQL
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19-postgres-intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    19. Створення бази даних у PostgreSQL (PgAdmin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20-views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    20. Створення та застосування Views у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../21-functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    21. Написання функцій у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22-procedures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    22. Створення та використання процедур у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    23. Виконання завдань зі створення процедур у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    23. Виконання завдань зі створення процедур у PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Зміст">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Зміст
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Теорія: транзакції та помилки в процедурах
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Теорія: транзакції та помилки в процедурах">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Один виклик CALL = одна транзакція
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-commit-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. COMMIT і ROLLBACK усередині процедури
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Пастка: CALL усередині явної транзакції
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Процедура-обгортка бізнес-операції
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-exception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Обробка помилок: блок EXCEPTION
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-commit-exception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Пастка: COMMIT у блоці з EXCEPTION
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Варіант
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Завдання
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Що здати й оцінюється
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Підсумок заняття
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендована література
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../24-triggers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    24. Реалізація тригерів
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Самостійна робота
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Самостійна робота
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Огляд і графік
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../independent-study/module4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Модуль 4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://my-cd-rom.github.io/data-bases-course/lapa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Тренажер SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Зміст">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Зміст
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Теорія: транзакції та помилки в процедурах
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Теорія: транзакції та помилки в процедурах">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Один виклик CALL = одна транзакція
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-commit-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. COMMIT і ROLLBACK усередині процедури
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Пастка: CALL усередині явної транзакції
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Процедура-обгортка бізнес-операції
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-exception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Обробка помилок: блок EXCEPTION
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-commit-exception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Пастка: COMMIT у блоці з EXCEPTION
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Варіант
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Завдання
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Що здати й оцінюється
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Підсумок заняття
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендована література
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="23-postgresql">Практика 23. Транзакції та обробка помилок у процедурах PostgreSQL<a class="headerlink" href="#23-postgresql" title="Permanent link">&para;</a></h1>
+<p><em>Мета заняття: виконати завдання зі створення процедур у PostgreSQL:
+оформити бізнес-операцію свого варіанта як процедуру з
+перевірками стану даних, замінити системні помилки зрозумілими
+повідомленнями через блок <code>EXCEPTION</code>, виконати порційну обробку з
+<code>COMMIT</code> усередині процедури і на практиці побачити обмеження
+керування транзакціями. Окремої лекції для цієї теми немає: теорію
+наведено нижче, вона продовжує <a href="../22-procedures/">практику 22</a>.</em></p>
+<h2 id="_1">Теорія: транзакції та помилки в процедурах<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>На практиці 22 процедура була просто іменованою парою змін. Тут
+розглянемо три питання, без яких процедура не годиться для реальної
+роботи: коли зміни фіксуються, як перевірити стан даних перед зміною і
+що робити з помилками.</p>
+<p>Приклади використовують базу прокату туристичного спорядження: <code>gear</code>
+(спорядження з ціною за добу <code>daily_price</code> і залишком <code>in_stock</code>),
+<code>customers</code> (клієнти) і <code>rentals</code> (видачі). Щоб повторити їх, створіть
+окрему базу (наприклад, <code>gear_demo</code>) і виконайте в ній файл
+<a href="../sql/23-procedures-2/gear_rental_demo.sql">gear_rental_demo.sql</a>.
+Приклади виконуйте по черзі. У більшості виводів нижче рядок
+<code>CONTEXT</code> (де саме в процедурі сталася помилка) для стислості опущено,
+у вашому виводі він може бути.</p>
+<h3 id="1-call">1. Один виклик CALL = одна транзакція<a class="headerlink" href="#1-call" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">PROCEDURE</span><span class="w"> </span><span class="n">two_steps</span><span class="p">()</span>
+<span class="k">LANGUAGE</span><span class="w"> </span><span class="n">plpgsql</span>
+<span class="k">AS</span><span class="w"> </span><span class="err">$$</span>
+<span class="k">BEGIN</span>
+<span class="w">    </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">gear</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">in_stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in_stock</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="n">RAISE</span><span class="w"> </span><span class="k">EXCEPTION</span><span class="w"> </span><span class="s1">'збій на другому кроці'</span><span class="p">;</span>
+<span class="k">END</span><span class="p">;</span>
+<span class="err">$$</span><span class="p">;</span>
+
+<span class="k">CALL</span><span class="w"> </span><span class="n">two_steps</span><span class="p">();</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">in_stock</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">gear</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ERROR:  збій на другому кроці
+ in_stock
+----------
+       10
+</code></pre></div>
+<p>Перший крок виконався, але після помилки залишок каремата знову 10:
+скасовано <strong>весь</strong> виклик. Без жодного <code>COMMIT</code> у тілі процедури (слова
+<code>BEGIN ... END</code> тут лише межі блоку PL/pgSQL, а не початок транзакції)
+вона працює за принципом «все або нічого», як транзакція з
+<a href="../../lectures/12-transactions/">лекції 12</a>.</p>
+<h3 id="2-commit-rollback">2. COMMIT і ROLLBACK усередині процедури<a class="headerlink" href="#2-commit-rollback" title="Permanent link">&para;</a></h3>
+<p>Іноді «все або нічого» якраз заважає. Наприклад, процедура оновлює
+тисячі рядків, і помилка на останньому не повинна знищувати вже
+виконану роботу. Тоді роботу фіксують частинами: на відміну від
+функції (лекція 17, розділ 5), процедура <strong>може</strong> виконувати <code>COMMIT</code> і
+<code>ROLLBACK</code> у своєму тілі. Процедура нижче підвищує ціни на заданий
+відсоток, рядок за рядком, і фіксує кожен рядок окремо. Правило
+бізнесу: ціна за добу не може перевищити межу <code>p_max</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">PROCEDURE</span><span class="w"> </span><span class="n">reprice_gear</span><span class="p">(</span><span class="n">p_percent</span><span class="w"> </span><span class="nb">NUMERIC</span><span class="p">,</span><span class="w"> </span><span class="n">p_max</span><span class="w"> </span><span class="nb">NUMERIC</span><span class="p">)</span>
+<span class="k">LANGUAGE</span><span class="w"> </span><span class="n">plpgsql</span>
+<span class="k">AS</span><span class="w"> </span><span class="err">$$</span>
+<span class="k">DECLARE</span>
+<span class="w">    </span><span class="n">r</span><span class="w"> </span><span class="n">RECORD</span><span class="p">;</span>
+<span class="w">    </span><span class="n">v_new</span><span class="w"> </span><span class="nb">NUMERIC</span><span class="p">;</span>
+<span class="k">BEGIN</span>
+<span class="w">    </span><span class="k">FOR</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">daily_price</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">gear</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="n">LOOP</span>
+<span class="w">        </span><span class="n">v_new</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">round</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">daily_price</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">p_percent</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="p">),</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="w">        </span><span class="k">IF</span><span class="w"> </span><span class="n">v_new</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">p_max</span><span class="w"> </span><span class="k">THEN</span>
+<span class="w">            </span><span class="n">RAISE</span><span class="w"> </span><span class="k">EXCEPTION</span><span class="w"> </span><span class="s1">'Ціна спорядження % перевищила б межу: %'</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">v_new</span><span class="p">;</span>
+<span class="w">        </span><span class="k">END</span><span class="w"> </span><span class="k">IF</span><span class="p">;</span>
+<span class="w">        </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">gear</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">daily_price</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v_new</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+<span class="w">        </span><span class="k">COMMIT</span><span class="p">;</span>
+<span class="w">    </span><span class="k">END</span><span class="w"> </span><span class="n">LOOP</span><span class="p">;</span>
+<span class="k">END</span><span class="p">;</span>
+<span class="err">$$</span><span class="p">;</span>
+
+<span class="k">CALL</span><span class="w"> </span><span class="n">reprice_gear</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">);</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">daily_price</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">gear</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ERROR:  Ціна спорядження 3 перевищила б межу: 275.00
+ id |       name        | daily_price
+----+-------------------+-------------
+  1 | Каремат           |       44.00
+  2 | Спальник          |      132.00
+  3 | Намет двомісний   |      250.00
+  4 | Казанок           |       60.00
+  5 | Трекінгові палиці |       80.00
+</code></pre></div>
+<p><code>FOR r IN SELECT ... LOOP</code> перебирає рядки запиту по одному (<code>r.id</code>,
+<code>r.daily_price</code> є полями поточного рядка; докладніше про цикли і тип
+<code>RECORD</code> – <a href="../../lectures/17-functions/#plpgsql">лекція 17, розділ 6</a>. Рядки 1 і 2 встигли
+зафіксуватися власними <code>COMMIT</code> і лишилися зміненими, помилка
+скасувала лише незафіксовану роботу після останнього <code>COMMIT</code>. Якби
+<code>COMMIT</code> у циклі не було, ця сама помилка скасувала б увесь виклик, і
+всі п’ять цін лишилися б початковими. Після <code>COMMIT</code> чи <code>ROLLBACK</code>
+усередині процедури PostgreSQL одразу починає нову транзакцію, тож
+наступні команди процедури працюють уже в ній. <code>ROLLBACK</code> у тілі
+відкидає все, що змінено після останнього <code>COMMIT</code>. У реальних
+системах фіксують порціями (наприклад, по 1000 рядків), тут для
+наочності по одному.</p>
+<h3 id="3-call">3. Пастка: CALL усередині явної транзакції<a class="headerlink" href="#3-call" title="Permanent link">&para;</a></h3>
+<p>Процедура може завершувати лише ту транзакцію, яку почав сам <code>CALL</code>.
+Якщо виклик стоїть усередині транзакції, відкритої вручну, <code>COMMIT</code> у
+тілі процедури не має права її закрити:</p>
+<div class="highlight"><pre><span></span><code><span class="k">BEGIN</span><span class="p">;</span>
+<span class="k">CALL</span><span class="w"> </span><span class="n">reprice_gear</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ERROR:  invalid transaction termination
+CONTEXT:  PL/pgSQL function reprice_gear(numeric,numeric) line 12 at COMMIT
+</code></pre></div>
+<p>Після помилки транзакцію треба закрити командою <code>ROLLBACK</code>, жодна ціна
+при цьому не зміниться. Висновок: процедури з <code>COMMIT</code> викликають
+окремою командою, а не між <code>BEGIN</code> і <code>COMMIT</code> клієнтського коду. У
+pgAdmin виклик процедури з <code>COMMIT</code> виконуйте окремо: виділіть лише
+рядок <code>CALL ...;</code> і натисніть F5. Якщо запустити його разом з іншими
+командами скрипту, PostgreSQL виконає їх в одній неявній транзакції, і
+буде та сама помилка <code>invalid transaction termination</code> (разом з нею
+скасується навіть щойно виконаний <code>CREATE PROCEDURE</code>). Процедурі без <code>COMMIT</code> така ситуація не
+загрожує: усередині чужої транзакції вона просто стає її частиною.</p>
+<h3 id="4-">4. Процедура-обгортка бізнес-операції<a class="headerlink" href="#4-" title="Permanent link">&para;</a></h3>
+<p>Видача спорядження складається з кількох кроків: перевірити запит,
+перевірити залишок, записати видачу, зменшити залишок. Атомарність сама
+від логічних помилок не захищає: без перевірки процедура спокійно
+видасть три намети, коли на складі один, і залишок стане від’ємним.
+Правила бізнесу процедура перевіряє сама, <strong>до</strong> будь-яких змін:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">PROCEDURE</span><span class="w"> </span><span class="n">rent_gear</span><span class="p">(</span><span class="n">p_gear_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="n">p_customer_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="n">p_qty</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">)</span>
+<span class="k">LANGUAGE</span><span class="w"> </span><span class="n">plpgsql</span>
+<span class="k">AS</span><span class="w"> </span><span class="err">$$</span>
+<span class="k">DECLARE</span>
+<span class="w">    </span><span class="n">v_stock</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">;</span>
+<span class="k">BEGIN</span>
+<span class="w">    </span><span class="k">IF</span><span class="w"> </span><span class="n">p_qty</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">p_qty</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">THEN</span>
+<span class="w">        </span><span class="n">RAISE</span><span class="w"> </span><span class="k">EXCEPTION</span><span class="w"> </span><span class="s1">'Кількість має бути додатною, отримано %'</span><span class="p">,</span><span class="w"> </span><span class="n">p_qty</span><span class="p">;</span>
+<span class="w">    </span><span class="k">END</span><span class="w"> </span><span class="k">IF</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">in_stock</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">v_stock</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">gear</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_gear_id</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="k">UPDATE</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">FOUND</span><span class="w"> </span><span class="k">THEN</span>
+<span class="w">        </span><span class="n">RAISE</span><span class="w"> </span><span class="k">EXCEPTION</span><span class="w"> </span><span class="s1">'Спорядження з id % не існує'</span><span class="p">,</span><span class="w"> </span><span class="n">p_gear_id</span><span class="p">;</span>
+<span class="w">    </span><span class="k">END</span><span class="w"> </span><span class="k">IF</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">IF</span><span class="w"> </span><span class="n">v_stock</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">p_qty</span><span class="w"> </span><span class="k">THEN</span>
+<span class="w">        </span><span class="n">RAISE</span><span class="w"> </span><span class="k">EXCEPTION</span><span class="w"> </span><span class="s1">'Недостатньо на складі: є %, потрібно %'</span><span class="p">,</span><span class="w"> </span><span class="n">v_stock</span><span class="p">,</span><span class="w"> </span><span class="n">p_qty</span><span class="p">;</span>
+<span class="w">    </span><span class="k">END</span><span class="w"> </span><span class="k">IF</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">rentals</span><span class="w"> </span><span class="p">(</span><span class="n">gear_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">qty</span><span class="p">,</span><span class="w"> </span><span class="n">rent_date</span><span class="p">)</span>
+<span class="w">    </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="n">p_gear_id</span><span class="p">,</span><span class="w"> </span><span class="n">p_customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">p_qty</span><span class="p">,</span><span class="w"> </span><span class="k">CURRENT_DATE</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">gear</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">in_stock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in_stock</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">p_qty</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_gear_id</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">RAISE</span><span class="w"> </span><span class="n">NOTICE</span><span class="w"> </span><span class="s1">'Видано % шт., залишок %'</span><span class="p">,</span><span class="w"> </span><span class="n">p_qty</span><span class="p">,</span><span class="w"> </span><span class="n">v_stock</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">p_qty</span><span class="p">;</span>
+<span class="k">END</span><span class="p">;</span>
+<span class="err">$$</span><span class="p">;</span>
+
+<span class="k">CALL</span><span class="w"> </span><span class="n">rent_gear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="k">CALL</span><span class="w"> </span><span class="n">rent_gear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="k">CALL</span><span class="w"> </span><span class="n">rent_gear</span><span class="p">(</span><span class="mi">99</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>NOTICE:  Видано 2 шт., залишок 1
+CALL
+ERROR:  Недостатньо на складі: є 1, потрібно 2
+ERROR:  Спорядження з id 99 не існує
+</code></pre></div>
+<p>Порядок завжди однаковий: спершу перевірки, потім зміни. Некоректний
+запит зупиняється ще до того, як щось змінилось. <code>RAISE NOTICE</code> не
+перериває роботу, а лише виводить повідомлення (у pgAdmin воно на
+вкладці <strong>Messages</strong>), тому ним зручно звітувати про успіх. Перевірку
+«чи немає вже такого рядка» (зайняте місце, чинний абонемент)
+записують через <code>IF EXISTS (підзапит)</code>. Умова істинна, якщо вкладений
+<code>SELECT</code> повернув хоча б один рядок (що саме він вибирає, неважливо,
+тому пишуть <code>SELECT 1</code>). Наприклад, заборонимо клієнтові брати
+спорядження вдруге за один день:</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">rentals</span>
+<span class="w">               </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_customer_id</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">rent_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">CURRENT_DATE</span><span class="p">)</span><span class="w"> </span><span class="k">THEN</span>
+<span class="w">        </span><span class="n">RAISE</span><span class="w"> </span><span class="k">EXCEPTION</span><span class="w"> </span><span class="s1">'Клієнт % уже брав спорядження сьогодні'</span><span class="p">,</span><span class="w"> </span><span class="n">p_customer_id</span><span class="p">;</span>
+<span class="w">    </span><span class="k">END</span><span class="w"> </span><span class="k">IF</span><span class="p">;</span>
+</code></pre></div>
+<p>Якщо правило стосується статусу, умову
+пишуть як <code>IF v_status IS DISTINCT FROM 'вільний' THEN</code>: звичайне <code>&lt;&gt;</code>
+для статусу <code>NULL</code> дало б невизначений результат, і операція пройшла б
+без перевірки (лекція 17, розділ 7).</p>
+<p><code>FOR UPDATE</code> блокує прочитаний рядок <code>gear</code> до кінця транзакції. Без
+нього два одночасні виклики могли б обидва прочитати «є 1» і обидва
+видати намет (сценарій двох продавців із лекції 12). З <code>FOR UPDATE</code>
+другий виклик чекає, доки перший завершиться, і читає вже зменшений
+залишок.</p>
+<p>Клієнта процедура не перевіряє, і для неіснуючого клієнта PostgreSQL
+сам зупинить <code>INSERT</code> зовнішнім ключем:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">rent_gear</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">99</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>ERROR:  insert or update on table "rentals" violates foreign key constraint "rentals_customer_id_fkey"
+DETAIL:  Key (customer_id)=(99) is not present in table "customers".
+</code></pre></div>
+<p>Дані захищені, але таке повідомлення незрозуміле касиру прокату.</p>
+<h3 id="5-exception">5. Обробка помилок: блок EXCEPTION<a class="headerlink" href="#5-exception" title="Permanent link">&para;</a></h3>
+<p>Будь-яку частину тіла можна загорнути у вкладений блок
+<code>BEGIN ... EXCEPTION ... END;</code> і вказати, що робити з помилкою
+певного виду. Замінимо в процедурі <code>INSERT</code> таким блоком:</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="k">BEGIN</span>
+<span class="w">        </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">rentals</span><span class="w"> </span><span class="p">(</span><span class="n">gear_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">qty</span><span class="p">,</span><span class="w"> </span><span class="n">rent_date</span><span class="p">)</span>
+<span class="w">        </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="n">p_gear_id</span><span class="p">,</span><span class="w"> </span><span class="n">p_customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">p_qty</span><span class="p">,</span><span class="w"> </span><span class="k">CURRENT_DATE</span><span class="p">);</span>
+<span class="w">    </span><span class="k">EXCEPTION</span>
+<span class="w">        </span><span class="k">WHEN</span><span class="w"> </span><span class="n">foreign_key_violation</span><span class="w"> </span><span class="k">THEN</span>
+<span class="w">            </span><span class="n">RAISE</span><span class="w"> </span><span class="k">EXCEPTION</span><span class="w"> </span><span class="s1">'Клієнта з id % не існує'</span><span class="p">,</span><span class="w"> </span><span class="n">p_customer_id</span><span class="p">;</span>
+<span class="w">    </span><span class="k">END</span><span class="p">;</span>
+</code></pre></div>
+<p>Після <code>CREATE OR REPLACE PROCEDURE rent_gear</code> з цим блоком (решта тіла
+без змін) той самий виклик дає:</p>
+<div class="highlight"><pre><span></span><code>ERROR:  Клієнта з id 99 не існує
+</code></pre></div>
+<p>Як працює блок. Коли команда всередині блоку завершується помилкою,
+PostgreSQL скасовує зміни, зроблені в цьому блоці, і шукає в
+<code>EXCEPTION</code> гілку <code>WHEN</code> з назвою цієї помилки. Поширені назви:
+<code>foreign_key_violation</code>, <code>unique_violation</code>, <code>check_violation</code>,
+<code>not_null_violation</code>; <code>OTHERS</code> перехоплює будь-яку помилку. Усередині
+обробника доступні <code>SQLERRM</code> (текст початкової помилки) і <code>SQLSTATE</code>
+(її код, наприклад <code>23503</code>). Якщо гілки для помилки немає, вона йде
+далі, як без блоку.</p>
+<p>Обробник у прикладі знову викликає <code>RAISE EXCEPTION</code>, тож весь виклик
+скасовується, як і раніше, змінюється лише текст. Якщо ж обробник
+помилку «проковтне» (наприклад, лише <code>RAISE NOTICE</code>), процедура
+продовжить роботу з наступної команди після блоку і завершиться
+успішно: у нашому прикладі вона зменшила б залишок, хоча видачу не
+записано. Тому обробник без повторного
+<code>RAISE EXCEPTION</code> пишуть лише тоді, коли продовження справді
+допустиме.</p>
+<h3 id="6-commit-exception">6. Пастка: COMMIT у блоці з EXCEPTION<a class="headerlink" href="#6-commit-exception" title="Permanent link">&para;</a></h3>
+<p>Блок з <code>EXCEPTION</code> працює як вкладена транзакція (точка збереження), і
+доки він виконується, завершити основну транзакцію не можна. Якщо
+поставити <code>COMMIT</code> всередину такого блоку, виклик із правильними
+даними завершиться помилкою:</p>
+<div class="highlight"><pre><span></span><code>ERROR:  cannot commit while a subtransaction is active
+</code></pre></div>
+<p>Тож <code>COMMIT</code> у процедурі розміщують поза блоками з <code>EXCEPTION</code>, як у
+циклі з розділу 2.</p>
+<h2 id="_2">Варіант<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Ваша база у PostgreSQL з <a href="../19-postgres-intro/">практики 19</a> разом із
+процедурами з <a href="../22-procedures/">практики 22</a>. Якщо базу втрачено,
+поверніться до практики 19. Повна структура варіантів наведена в
+<a href="../03-er-modeling/">практиці 3</a>.</p>
+<p>Бізнес-операцію для завдань 1–2 і колонку для порційного оновлення в
+завданні 3 оберіть з таблиці. Назви статусів у вашій базі можуть
+відрізнятися: використовуйте свої. Можна запропонувати й власну
+операцію, якщо в ній є щонайменше дві перевірки стану даних.</p>
+<table>
+<thead>
+<tr>
+<th>№</th>
+<th>Варіант</th>
+<th>Бізнес-операція (завдання 1–2)</th>
+<th>Порційне оновлення (завдання 3)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Бібліотека</td>
+<td>Видача книги: книга існує, <code>copies_count</code> &gt; 0; <code>INSERT</code> у <code>loans</code>, <code>copies_count</code> − 1</td>
+<td><code>books.copies_count</code> + N, з межею</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Магазин одягу</td>
+<td>Замовлення: кількість &gt; 0, товар існує, <code>stock_quantity</code> ≥ кількості; <code>INSERT</code> у <code>orders</code>, <code>stock_quantity</code> − кількість</td>
+<td><code>products.price</code> + N %, з межею</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Кінотеатр</td>
+<td>Продаж квитка: ціна &gt; 0, фільм існує, місце в цьому залі на цей сеанс ще не продане; <code>INSERT</code> у <code>tickets</code></td>
+<td><code>movies.duration_min</code> + N хв, з межею</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Аптека</td>
+<td>Прийом поставки: кількість &gt; 0, препарат існує, закупівельна ціна менша за роздрібну <code>price</code>; <code>INSERT</code> у <code>deliveries</code>, <code>stock_quantity</code> + кількість</td>
+<td><code>medicines.price</code> + N %, з межею</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Автосалон</td>
+<td>Продаж авто: авто існує, статус «в наявності»; <code>INSERT</code> у <code>sales</code>, статус «продано»</td>
+<td><code>cars.price</code> + N %, з межею</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Готель</td>
+<td>Поселення: дата виїзду пізніша за сьогоднішню, номер існує, статус «вільний»; <code>INSERT</code> у <code>bookings</code>, статус «зайнятий»</td>
+<td><code>rooms.price_per_night</code> + N %, з межею</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Спортзал</td>
+<td>Продаж абонемента: абонемент існує, у клієнта немає чинного абонемента; <code>INSERT</code> у <code>membership_sales</code> з датою завершення = дата покупки + <code>duration_days</code></td>
+<td><code>memberships.price</code> + N %, з межею</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Доставка їжі</td>
+<td>Нове замовлення: страва існує, у кур’єра немає незавершеного замовлення; <code>INSERT</code> в <code>orders</code> зі статусом «прийнято»</td>
+<td><code>dishes.price</code> + N %, з межею</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Університет</td>
+<td>Виставлення оцінки: оцінка від 0 до 100, дисципліна існує; якщо оцінка студента з цієї дисципліни вже є, <code>UPDATE</code>, інакше <code>INSERT</code> у <code>grades</code></td>
+<td><code>courses.credits</code> + N, з межею</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Транспорт</td>
+<td>Призначення рейсу: маршрут існує, на маршрут понад 300 км лише водій зі стажем від 2 років, у водія немає іншого рейсу в цю дату; <code>INSERT</code> у <code>trips</code> (стаж водія читайте лише для маршрутів понад 300 км, тож на короткому маршруті водій не перевіряється)</td>
+<td><code>drivers.experience_years</code> + N, з межею</td>
+</tr>
+</tbody>
+</table>
+<p>Якщо колонка ціни має тип <code>REAL</code>, вираз <code>round(price * 1.1, 2)</code>
+завершиться помилкою <code>function round(double precision, integer) does
+not exist</code>: приведіть значення до <code>NUMERIC</code>, наприклад
+<code>round(price::numeric * 1.1, 2)</code>. Якщо дата зберігається як <code>TEXT</code>,
+для порівняння приведіть її до дати: <code>expiration_date::date &gt;=
+CURRENT_DATE</code>.</p>
+<h2 id="_3">Завдання<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p><strong>Завдання 1. Процедура бізнес-операції з перевірками.</strong> Напишіть
+процедуру для операції свого варіанта з таблиці. Тіло побудуйте за
+зразком розділу 4: перевірка вхідних параметрів, читання потрібного
+рядка (<code>SELECT ... INTO ... FOR UPDATE</code>) з перевіркою <code>NOT FOUND</code>,
+перевірка правила бізнесу, і лише потім зміни та <code>RAISE NOTICE</code> з
+підсумком. У базі вже є процедури з практики 22, тож дайте новій
+процедурі іншу назву або використайте <code>CREATE OR REPLACE</code> (інакше
+PostgreSQL відповість <code>already exists with same argument types</code>).
+Виконайте один успішний виклик і щонайменше два виклики, що порушують
+<strong>різні</strong> правила. Після кожного невдалого виклику <code>SELECT</code>-ом
+підтвердьте, що жодна таблиця не змінилась.</p>
+<p><strong>Завдання 2. Зрозуміле повідомлення замість системної помилки.</strong>
+Викличте процедуру із завдання 1 з неіснуючим <code>id</code> у таблиці, яку
+процедура явно не перевіряє (наприклад, читача, покупця, клієнта,
+постачальника), і запишіть системну помилку зовнішнього ключа. (Для варіанта 10
+візьміть неіснуючого водія на короткому маршруті, бо для довгого його
+стаж перевіряє сама процедура.) Потім
+загорніть <code>INSERT</code> у блок <code>BEGIN ... EXCEPTION WHEN
+foreign_key_violation THEN RAISE EXCEPTION ...</code> (розділ 5), повторіть
+виклик і запишіть нове повідомлення. Перевірте, що й цього разу нічого
+не змінилось.</p>
+<p><strong>Завдання 3. Порційна обробка з COMMIT.</strong> Напишіть процедуру з двома
+параметрами (величина зміни і межа), що в циклі <code>FOR ... IN SELECT ...
+ORDER BY id LOOP</code> змінює колонку свого варіанта з таблиці рядок за
+рядком, виконує <code>COMMIT</code> після кожного рядка і викликає <code>RAISE
+EXCEPTION</code>, якщо нове значення перевищує межу. Запишіть <code>SELECT</code>-ом
+значення до виклику, підберіть межу так, щоб помилка сталася десь
+посередині таблиці, викличте процедуру (виклик <code>CALL</code> виконуйте окремо, розділ 3) і знову
+запишіть значення. Письмово поясніть, які рядки змінились, а які ні, і чому.</p>
+<p><strong>Завдання 4. Дві пастки керування транзакціями.</strong> (а) Виконайте
+<code>BEGIN;</code>, потім виклик процедури із завдання 3 з межею, за якої
+помилки правила не буде, запишіть точний текст помилки (перший рядок
+<code>ERROR</code>, рядок <code>CONTEXT</code> необов’язковий), закрийте
+транзакцію <code>ROLLBACK</code> і перевірте, що значення не змінились.
+(б) Тимчасово додайте <code>COMMIT</code> всередину блоку з <code>EXCEPTION</code> у процедурі
+із завдання 2 (після <code>INSERT</code>; обробник має перехоплювати лише
+<code>foreign_key_violation</code>, без <code>WHEN OTHERS</code>), викличте її з коректними даними і
+запишіть точний текст помилки. Поверніть процедуру до робочого стану
+й поясніть письмово причину кожної з двох помилок.</p>
+<p><strong>Завдання 5 (додаткове, для тих, хто встиг). Із COMMIT і без нього.</strong>
+Змініть процедуру із завдання 3
+через <code>CREATE OR REPLACE</code>, прибравши <code>COMMIT</code> з циклу. Спершу поверніть значення, записані перед
+завданням 3, командою <code>UPDATE</code>. Запишіть значення,
+викличте процедуру з тими самими параметрами, що в завданні 3, і
+порівняйте, які рядки змінились цього разу. Письмово дайте відповідь:
+у якій ситуації вашого варіанта доречна порційна фіксація, а в якій
+потрібне «все або нічого», і чи потрібен <code>COMMIT</code> процедурі із
+завдання 1.</p>
+<h2 id="_4">Що здати й оцінюється<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>Здайте <code>lab_work_23.sql</code>: усі <code>CREATE PROCEDURE</code> (завдання 1, 2, 3 і додаткового 5),
+усі виклики <code>CALL</code> з повідомленнями й результатами перевірочних
+<code>SELECT</code>, точні тексти помилок із завдань 2 і 4; і <code>lab_work_23.md</code>:
+письмові пояснення до завдань 3 і 4 (і 5, якщо виконували). Контрольні питання:</p>
+<ul>
+<li>Що станеться з частиною роботи процедури, виконаною до <code>COMMIT</code>,
+  якщо після <code>COMMIT</code> виникне помилка? А без <code>COMMIT</code> у тілі?</li>
+<li>Чому процедуру з <code>COMMIT</code> не можна викликати між <code>BEGIN</code> і <code>COMMIT</code>
+  у клієнтському коді?</li>
+<li>Чому перевірки стану (залишок, статус, зайняте місце) ставлять до
+  змін і від чого захищає <code>FOR UPDATE</code>?</li>
+<li>Чим небезпечний обробник <code>EXCEPTION</code>, що лише виводить
+  <code>RAISE NOTICE</code> і не викликає повторно <code>RAISE EXCEPTION</code>?</li>
+</ul>
+<p>Оцінюється коректність процедури завдання 1 (усі перевірки до змін,
+перевірені успішний і невдалі виклики), робочий обробник помилки в
+завданні 2, правильно пояснений результат порційної обробки в
+завданні 3 (і 5, якщо виконувалось), і точно зафіксовані помилки завдання 4.</p>
+<h2 id="_5">Підсумок заняття<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Оформлено бізнес-операцію свого варіанта як процедуру, що перевіряє
+  стан даних до змін і звітує про результат через <code>RAISE NOTICE</code>.</li>
+<li>Системну помилку зовнішнього ключа замінено зрозумілим повідомленням
+  через блок <code>EXCEPTION</code>.</li>
+<li>На практиці підтверджено: <code>COMMIT</code> у процедурі фіксує роботу
+  частинами, а без нього помилка скасовує весь виклик.</li>
+<li>Зафіксовано два обмеження: <code>COMMIT</code> у процедурі неможливий усередині
+  явної транзакції викликача і всередині блоку з <code>EXCEPTION</code>.</li>
+</ul>
+<p><strong>Теорія до цієї практики:</strong> розділ «Теорія» вище на цій сторінці
+(продовжує <a href="../22-procedures/">Практику 22. Створення процедур у PostgreSQL</a>).</p>
+<p><strong>Наступна лекція:</strong> <a href="../../lectures/18-triggers/">Лекція 18. Тригери (Triggers) у PostgreSQL</a></p>
+<h2 id="_6">Рекомендована література<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>Павловський В. І., Петрашенко А. В., Победа Д. В. <em>Бази даних та засоби управління. Практикум.</em> Київ: КПІ ім. Ігоря Сікорського, 2021 (<a href="https://ela.kpi.ua/server/api/core/bitstreams/1b620029-0db7-4e2e-83e7-32f7722a69be/content">відкритий доступ</a>). Розділ про збережені процедури та тригери: створення серверних функцій і процедур.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Повернутись нагору
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "search.suggest"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0456\u0439\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u0421\u043a\u043e\u043f\u0456\u044e\u0432\u0430\u0442\u0438 \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0429\u0435 1 \u0437\u0431\u0456\u0433 \u043d\u0430 \u0446\u0456\u0439 \u0441\u0442\u043e\u0440\u0456\u043d\u0446\u0456", "search.result.more.other": "\u0429\u0435 # \u0437\u0431\u0456\u0433\u0456\u0432 \u043d\u0430 \u0446\u0456\u0439 \u0441\u0442\u043e\u0440\u0456\u043d\u0446\u0456", "search.result.none": "\u0417\u0431\u0456\u0433\u0456\u0432 \u043d\u0435 \u0437\u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u0417\u043d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0437\u0431\u0456\u0433", "search.result.other": "\u0417\u043d\u0430\u0439\u0434\u0435\u043d\u043e # \u0437\u0431\u0456\u0433\u0456\u0432", "search.result.placeholder": "\u0420\u043e\u0437\u043f\u043e\u0447\u043d\u0456\u0442\u044c \u043f\u0438\u0441\u0430\u0442\u0438 \u0434\u043b\u044f \u043f\u043e\u0448\u0443\u043a\u0443", "search.result.term.missing": "\u041d\u0435 \u0437\u043d\u0430\u0439\u0434\u0435\u043d\u043e \u0437\u0430\u043f\u0438\u0442\u0443", "select.version": "\u041e\u0431\u0440\u0430\u0442\u0438 \u0432\u0435\u0440\u0441\u0456\u044e"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+    
+  </body>
+</html>
