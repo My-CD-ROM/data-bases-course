@@ -1,0 +1,30 @@
+Завдання 4
+
+Для duration_days встановлено DEFAULT 30.
+При вставці нового абонемента без вказання duration_days SQLite автоматично встановив значення 30.
+
+
+Завдання 5
+
+При виконанні UPDATE:
+
+UPDATE memberships
+SET price = -50
+WHERE id = 6;
+
+отримано помилку:
+
+CHECK constraint failed: price > 0
+
+Обмеження CHECK однаково діє при INSERT і UPDATE.
+
+
+Завдання 6
+
+NOT NULL для clients.last_name потрібен, тому що прізвище клієнта повинно бути обов'язково вказане.
+
+UNIQUE для clients.phone потрібен, щоб номери телефонів клієнтів не повторювалися.
+
+CHECK для memberships.price потрібен, щоб ціна абонемента не могла бути нульовою або від'ємною.
+
+DEFAULT для memberships.duration_days потрібен, щоб без вказаної тривалості автоматично встановлювалося значення 30 днів.
