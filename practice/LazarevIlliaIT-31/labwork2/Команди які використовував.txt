@@ -1,0 +1,12 @@
+Я використовував такі команди як : 
+SELECT type, duration_days FROM memberships
+.
+SELECT * FROM memberships WHERE price < 1500
+.
+SELECT * FROM memberships WHERE price < 1500 LIMIT 1
+.
+SELECT * FROM memberships WHERE price IS NOT NULL
+.
+SELECT * FROM memberships WHERE price IS NULL 
+.
+SELECT * FROM memberships WHERE price IS NOT NULL AND PRICE < 1200

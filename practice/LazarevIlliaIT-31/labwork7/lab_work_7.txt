@@ -1,0 +1,31 @@
+SELECT
+    c.last_name || ' ' || c.first_name AS клієнт,
+    m.type AS типабонемента,
+    ms.purchase_date AS датапокупки,
+    ms.expiration_date AS датазакінчення
+FROM membership_sales AS ms
+INNER JOIN memberships AS m
+    ON ms.membership_id = m.id
+INNER JOIN clients AS c
+    ON ms.client_id = c.id
+ORDER BY ms.purchase_date
+-------------------------
+SELECT
+    c.id,
+    c.last_name,
+    c.first_name,
+    c.phone
+FROM clients AS c
+LEFT JOIN membership_sales AS ms
+    ON ms.client_id = c.id
+WHERE ms.id IS NULL
+-------------------------
+SELECT COUNT(*) AS кількість_комбінацій
+FROM clients, memberships
+
+1. Чому рядок з NULL у зовнішньому ключі не з'явиться в INNER JOIN, але з'явиться в LEFT JOIN?
+INNER JOIN залишає тільки рядки, які мають відповідність в обох таблицях. LEFT JOIN зберігає всі рядки лівої таблиці, навіть якщо відповідності немає.
+2. Що станеться, якщо в Завданні 2 один JOIN замінити на LEFT JOIN?
+У результаті можуть залишитися рядки без відповідного запису в одній із таблиць. Для відсутніх даних будуть значення NULL.
+3. Чим відрізняється кома-синтаксис від JOIN ... ON?
+За наявності правильної умови результат може бути однаковим. Але JOIN ... ON зрозуміліший і зменшує ризик випадково отримати CROSS JOIN.
