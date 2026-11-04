@@ -1,0 +1,22 @@
+1. SELECT COUNT(*) FROM cars;
+2. CREATE TABLE cars_import (
+    brand TEXT,
+    model TEXT,
+    year INTEGER,
+    price REAL,
+    status TEXT
+);
+
+.mode csv
+.import --skip 1 "/шлях/до/cars.csv" cars_import
+3. INSERT INTO cars (brand, model, year, price, status)
+SELECT brand, model, year, price, status
+FROM cars_import;
+
+DROP TABLE cars_import;
+
+SELECT COUNT(*) FROM cars;
+
+4.SELECT *
+FROM cars
+WHERE model IN ('модель_1', 'модель_2', 'модель_3');

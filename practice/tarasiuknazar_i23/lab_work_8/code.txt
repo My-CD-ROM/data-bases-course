@@ -1,0 +1,10 @@
+1. SELECT COUNT(car_id) FROM sales - 6 (після апдейта car_id = NULL WHERE id = 7)
+   SELECT COUNT(*) FROM sales - 7
+2. SELECT SUM(price) AS sum_of_price,  AVG(price) AS average_price FROM cars - виводить середню ціну за машину та суму всіх цін
+3. SELECT MIN(price) FROM cars - найменша ціна за машину
+   SELECT MAX(brand) FROM cars - найдовша назва (з врахуванням регістру)
+4. SELECT AVG(price) AS average_price,
+	COUNT(id) AS count_of_cars ,
+	MAX(price) AS max_price
+	FROM cars
+5.SELECT COUNT(car_id) FROM sales WHERE id = 7 - WHERE прибрав всі інші дані з розрахунку (вказує де взяти дані)

@@ -1,0 +1,64 @@
+1. SAVEPOINT task1;
+
+INSERT INTO test_drives (car_id, client_id, test_drive_date, status)
+VALUES (1, 2, '2026-11-04', 'planned');
+
+UPDATE cars
+SET status = 'заброньований'
+WHERE id = 1;
+
+RELEASE SAVEPOINT task1;
+
+2.SAVEPOINT task2;
+
+INSERT INTO test_drives (car_id, client_id, test_drive_date, status)
+VALUES (1, 2, '2026-11-08', 'planned');
+
+ROLLBACK TO SAVEPOINT task2;
+
+SELECT *
+FROM test_drives
+WHERE test_drive_date = '2026-11-08';
+
+3.SAVEPOINT task3;
+
+INSERT INTO test_drives (car_id, client_id, test_drive_date, status)
+VALUES (1, 2, '2026-11-09', 'planned');
+
+SELECT *
+FROM test_drives
+WHERE test_drive_date = '2026-11-09';
+
+ROLLBACK TO SAVEPOINT task3;
+RELEASE SAVEPOINT task3;
+
+4.SAVEPOINT task4;
+
+INSERT INTO test_drives (car_id, client_id, test_drive_date, status)
+VALUES (1, 2, '2026-11-10', 'planned');
+
+SELECT model FROM cars;
+
+INSERT INTO cars (brand, model)
+VALUES ('Toyota', 'Camry');
+
+SELECT *
+FROM test_drives
+WHERE test_drive_date = '2026-11-10';
+
+ROLLBACK TO SAVEPOINT task4;
+RELEASE SAVEPOINT task4;
+
+5.SAVEPOINT task5;
+
+INSERT INTO test_drives (car_id, client_id, test_drive_date, status)
+VALUES (1, 2, '2026-11-11', 'planned');
+
+INSERT INTO cars (brand, model)
+VALUES ('Toyota', 'Camry');
+
+RELEASE SAVEPOINT task5;
+
+SELECT *
+FROM test_drives
+WHERE test_drive_date = '2026-11-11';

@@ -1,0 +1,18 @@
+1. SELECT duration_minutes, printf('%.2f хв', duration_minutes) AS formated_duration
+FROM test_drives
+
+2.SELECT duration_minutes, printf('%8.2f', duration_minutes) AS formatted_duration 
+FROM test_drives;
+
+3.SELECT
+    test_drive_date,
+    date(test_drive_date, '+7 days') AS date_after_week
+FROM test_drives;
+
+4.SELECT
+    strftime('%Y-%m', test_drive_date) AS year_month,
+    COUNT(*) AS total_test_drives
+FROM test_drives
+GROUP BY strftime('%Y-%m', test_drive_date);
+
+5.SELECT strftime('%Y', 'not-a-date') AS year;

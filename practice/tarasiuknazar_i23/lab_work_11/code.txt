@@ -1,0 +1,38 @@
+1. CREATE TABLE test_drives (
+    id INTEGER PRIMARY KEY,
+    car_id INTEGER NOT NULL,
+    client_id INTEGER NOT NULL,
+    test_drive_date TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'completed',
+    duration_minutes INTEGER CHECK (duration_minutes > 0),
+
+    FOREIGN KEY (car_id) REFERENCES cars(id),
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+
+    CHECK (status IN ('completed', 'cancelled', 'planned'))
+);
+
+2. SELECT cars.id, cars.model, COUNT(test_drives.id) AS test_drive_count
+FROM cars
+JOIN test_drives
+	ON test_drives.car_id = cars.id
+GROUP BY cars.id
+
+3.SELECT cars.id, cars.model, COUNT(test_drives.id) AS test_drive_count
+FROM cars
+JOIN test_drives
+	ON test_drives.car_id = cars.id
+GROUP BY cars.id
+HAVING test_drive_count >= 2
+
+4.SELECT cars.id, cars.model, COUNT(test_drives.id) AS test_drive_count
+FROM cars
+JOIN test_drives
+	ON test_drives.car_id = cars.id
+WHERE test_drives.status = 'completed'
+GROUP BY cars.id
+HAVING test_drive_count >= 2
+
+5. а) За id кожен клієнт рахується окремо, навіть якщо імена однакові. За ім’ям клієнти з однаковими іменами об’єднуються в одну групу, тому кількість тест-драйвів для такого імені сумується.
+б) Результат не зміниться, оскільки умова WHERE test_drives.status = 'completed' відкидає автомобілі, для яких немає відповідних тест-драйвів. Щоб зберегти такі автомобілі в результаті, умову перевірки статусу потрібно перенести в ON.
+в) Автомобілі з найбільшою кількістю завершених тест-драйвів користуються найбільшим інтересом серед клієнтів. За кількістю тест-драйвів можна визначити клієнтів, які ознайомлювалися з кількома автомобілями перед можливим придбанням. Тест-драйв не означає продаж, тому ці дані не підтверджують факт покупки.

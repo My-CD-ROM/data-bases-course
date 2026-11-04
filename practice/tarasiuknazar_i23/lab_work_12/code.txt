@@ -1,0 +1,22 @@
+1. SELECT * FROM test_drives
+ORDER BY test_drive_date DESC
+
+2.SELECT * FROM test_drives
+ORDER BY car_id DESC, test_drive_date
+
+3.SELECT * FROM test_drives
+ORDER BY duration_minutes  DESC LIMIT 3
+
+4.
+a)SELECT DISTINCT car_id
+FROM test_drives;
+
+б) SELECT *
+FROM test_drives
+WHERE status IN ("completed")
+
+5.SELECT * FROM cars
+WHERE brand LIKE "_e%"
+
+SELECT * FROM cars
+WHERE brand LIKE "re%"
