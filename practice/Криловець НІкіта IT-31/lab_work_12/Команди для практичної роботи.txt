@@ -1,0 +1,34 @@
+Завдання 1
+SELECT *
+FROM medicines
+ORDER BY price DESC;
+
+Завдання 2
+SELECT *
+FROM medicines
+ORDER BY manufacturer ASC, price DESC;
+
+Завдання 3
+SELECT *
+FROM medicines
+ORDER BY price DESC
+LIMIT 3;
+
+Завдання 4а
+SELECT DISTINCT manufacturer
+FROM medicines;
+
+Завдання 4б
+SELECT name, price
+FROM medicines
+WHERE price BETWEEN 100 AND 500;
+
+Завдання 5а
+SELECT name
+FROM medicines
+WHERE name LIKE 'А%';
+
+Завдання 5б
+SELECT name
+FROM medicines
+WHERE name LIKE 'а%';
