@@ -1,0 +1,116 @@
+Завдання 1:
+CREATE TABLE IF NOT EXISTS adverse_reactions (
+    id INTEGER PRIMARY KEY,
+    medicine_id INTEGER NOT NULL,
+    reaction_type TEXT NOT NULL,
+    severity TEXT NOT NULL
+        CHECK (severity IN ('Низька', 'Середня', 'Висока')),
+    reaction_date TEXT NOT NULL,
+    description TEXT,
+    FOREIGN KEY (medicine_id) REFERENCES medicines(id)
+);
+
+
+INSERT INTO adverse_reactions
+(medicine_id, reaction_type, severity, reaction_date, description)
+VALUES
+((SELECT id FROM medicines ORDER BY id LIMIT 1 OFFSET 0),
+ 'Нудота', 'Висока', '2026-01-15', 'Сильна нудота після прийому'),
+
+((SELECT id FROM medicines ORDER BY id LIMIT 1 OFFSET 0),
+ 'Головний біль', 'Висока', '2026-02-10', 'Головний біль після прийому'),
+
+((SELECT id FROM medicines ORDER BY id LIMIT 1 OFFSET 0),
+ 'Запаморочення', 'Середня', '2026-03-05', 'Легке запаморочення'),
+
+((SELECT id FROM medicines ORDER BY id LIMIT 1 OFFSET 1),
+ 'Алергія', 'Висока', '2026-01-20', 'Алергічна реакція'),
+
+((SELECT id FROM medicines ORDER BY id LIMIT 1 OFFSET 1),
+ 'Сонливість', 'Середня', '2026-02-15', 'Підвищена сонливість'),
+
+((SELECT id FROM medicines ORDER BY id LIMIT 1 OFFSET 1),
+ 'Нудота', 'Низька', '2026-03-12', 'Незначна нудота'),
+
+((SELECT id FROM medicines ORDER BY id LIMIT 1 OFFSET 2),
+ 'Головний біль', 'Висока', '2026-01-25', 'Сильний головний біль'),
+
+((SELECT id FROM medicines ORDER BY id LIMIT 1 OFFSET 2),
+ 'Алергія', 'Висока', '2026-03-18', 'Висипання на шкірі');
+
+SELECT * FROM adverse_reactions;
+
+
+Завдання 2:
+SELECT medicines.id, medicines.name,
+    COUNT(adverse_reactions.id) AS reactions_count
+FROM medicines
+JOIN adverse_reactions
+    ON medicines.id = adverse_reactions.medicine_id
+GROUP BY medicines.id;
+
+
+Завдання 3:
+SELECT medicines.id, medicines.name,
+    COUNT(adverse_reactions.id) AS reactions_count
+FROM medicines
+JOIN adverse_reactions
+    ON medicines.id = adverse_reactions.medicine_id
+GROUP BY medicines.id
+HAVING COUNT(adverse_reactions.id) > 2;
+
+
+Завдання 4:
+SELECT medicines.id, medicines.name,
+    COUNT(adverse_reactions.id) AS serious_reactions
+FROM medicines
+JOIN adverse_reactions
+    ON medicines.id = adverse_reactions.medicine_id
+WHERE adverse_reactions.severity = 'Висока'
+GROUP BY medicines.id
+HAVING COUNT(adverse_reactions.id) > 1;
+
+
+Завдання 5:
+INSERT INTO medicines
+(name, manufacturer, form, price, stock_quantity)
+SELECT name, manufacturer, form, price, stock_quantity
+FROM medicines
+ORDER BY id
+LIMIT 1;
+
+INSERT INTO adverse_reactions
+(medicine_id, reaction_type, severity, reaction_date, description)
+VALUES
+((SELECT MAX(id) FROM medicines),
+ 'Нудота', 'Висока', '2026-04-01', 'Повторна побічна реакція'),
+((SELECT MAX(id) FROM medicines),
+ 'Алергія', 'Висока', '2026-04-05', 'Алергічна реакція');
+
+Групування за ID
+SELECT medicines.id, medicines.name,
+    COUNT(adverse_reactions.id) AS reactions_count
+FROM medicines
+JOIN adverse_reactions
+    ON medicines.id = adverse_reactions.medicine_id
+GROUP BY medicines.id
+HAVING COUNT(adverse_reactions.id) > 2;
+
+Групування за назвою
+SELECT medicines.name,
+    COUNT(adverse_reactions.id) AS reactions_count
+FROM medicines
+JOIN adverse_reactions
+    ON medicines.id = adverse_reactions.medicine_id
+GROUP BY medicines.name
+HAVING COUNT(adverse_reactions.id) > 2;
+
+5б. Завдання з LEFT JOIN:
+SELECT medicines.id, medicines.name,
+    COUNT(adverse_reactions.id) AS serious_reactions
+FROM medicines
+LEFT JOIN adverse_reactions
+    ON medicines.id = adverse_reactions.medicine_id
+WHERE adverse_reactions.severity = 'Висока'
+GROUP BY medicines.id
+HAVING COUNT(adverse_reactions.id) > 1;
