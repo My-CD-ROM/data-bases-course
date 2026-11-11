@@ -1,62 +1,60 @@
--- Практична робота 16
--- Створення та використання індексів SQLite
--- Виконала: Вовк Марія, група І-23
 
--- 1. Перевірка кількості записів
+-- Практична робота №16
+-- Імпорт даних із CSV у SQLite
+-- Виконала: Вовк Марія Віталіївна, група І-23
+
+-- 1. Перевірка кількості записів до імпорту
 SELECT COUNT(*) AS total_books
 FROM books;
 
--- 2. Перевірка дублікатів
-SELECT title, author, COUNT(*) AS total
+-- 2. Створення проміжної таблиці
+DROP TABLE IF EXISTS books_staging;
+
+CREATE TABLE books_staging (
+    title TEXT,
+    author TEXT,
+    publication_year INTEGER,
+    genre TEXT,
+    copies_count INTEGER
+);
+
+-- 3. Імпорт CSV виконується в SQLite CLI:
+-- .mode csv
+-- .import --skip 1 "Практична 16/v1_new_rows.csv" books_staging
+
+-- 4. Перевірка імпортованих даних
+SELECT * FROM books_staging;
+
+-- 5. Перенесення даних до основної таблиці
+INSERT OR IGNORE INTO books (
+    title,
+    author,
+    publication_year,
+    genre,
+    copies_count
+)
+SELECT
+    title,
+    author,
+    publication_year,
+    genre,
+    copies_count
+FROM books_staging;
+
+-- 6. Видалення проміжної таблиці
+DROP TABLE books_staging;
+
+-- 7. Перевірка кількості записів після імпорту
+SELECT COUNT(*) AS total_books_after_import
+FROM books;
+
+-- 8. Перевірка нових книг
+SELECT id, title, author
 FROM books
-GROUP BY title, author
-HAVING COUNT(*) > 1;
+WHERE id >= 10
+ORDER BY id;
 
--- 3. Перевірка наявних індексів
-PRAGMA index_list(books);
-
--- 4. Перевірка пошуку за назвою
-EXPLAIN QUERY PLAN
-SELECT * FROM books
-WHERE title = 'Кобзар';
-
--- 5. Створення індексу за автором
-CREATE INDEX IF NOT EXISTS idx_books_author
-ON books(author);
-
--- 6. Перевірка пошуку за автором
-EXPLAIN QUERY PLAN
-SELECT * FROM books
-WHERE author = 'Іван Франко';
-
--- 7. Створення індексу за роком видання
-CREATE INDEX IF NOT EXISTS idx_books_year
-ON books(publication_year);
-
--- 8. Перевірка пошуку за роком
-EXPLAIN QUERY PLAN
-SELECT * FROM books
-WHERE publication_year = 1883;
-
--- 9. Створення складеного індексу
-CREATE INDEX IF NOT EXISTS idx_books_author_year
-ON books(author, publication_year);
-
--- 10. Перевірка складеного індексу
-EXPLAIN QUERY PLAN
-SELECT * FROM books
-WHERE author = 'Іван Франко'
-AND publication_year = 1883;
-
--- 11. Перевірка всіх індексів
-PRAGMA index_list(books);
-
--- 12. Перегляд SQL-опису індексів
-SELECT name, sql
-FROM sqlite_master
-WHERE type = 'index'
-AND tbl_name = 'books';
-
--- 13. Перевірка всіх книг
-SELECT * FROM books
+-- 9. Перегляд усіх книг
+SELECT id, title, author, publication_year, genre, copies_count
+FROM books
 ORDER BY id;
