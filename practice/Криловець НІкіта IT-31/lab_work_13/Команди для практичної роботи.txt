@@ -1,0 +1,27 @@
+Завдання 1
+SELECT
+    quantity,
+    printf('%.2f шт.', quantity) AS formatted_quantity
+FROM sales;
+
+Завдання 2
+SELECT
+    quantity,
+    printf('%8.2f', quantity) AS formatted_quantity
+FROM sales;
+
+Завдання 3
+SELECT
+    sale_date,
+    date(sale_date, '+7 days') AS new_date
+FROM sales;
+
+Завдання 4
+SELECT
+    strftime('%Y', sale_date) AS year,
+    COUNT(*) AS sales_count
+FROM sales
+GROUP BY year;
+
+Завдання 5
+SELECT strftime('%Y', 'not-a-date');
