@@ -1,0 +1,91 @@
+Завдання 1. Атомарна пара INSERT + UPDATE
+
+
+BEGIN;
+
+INSERT INTO sales (medicine_id, customer_id, sale_date, quantity)
+VALUES (1, 1, '2026-11-12', 1);
+
+UPDATE medicines
+SET stock_quantity = stock_quantity - 1
+WHERE id = 1;
+
+COMMIT;
+
+SELECT * FROM sales;
+
+SELECT id, name, stock_quantity
+FROM medicines
+WHERE id = 1;
+
+Завдання 2. Свідомий ROLLBACK
+
+
+BEGIN;
+
+UPDATE medicines
+SET price = price + 10
+WHERE id = 1;
+
+ROLLBACK;
+
+SELECT id, name, price
+FROM medicines
+WHERE id = 1;
+
+Завдання 3. Проміжний стан транзакції
+
+
+BEGIN;
+
+UPDATE medicines
+SET price = price + 20
+WHERE id = 1;
+
+SELECT id, name, price
+FROM medicines
+WHERE id = 1;
+
+ROLLBACK;
+
+Завдання 4. Свідома помилка всередині транзакції
+
+
+BEGIN;
+
+UPDATE medicines
+SET price = price + 5
+WHERE id = 1;
+
+INSERT INTO customers (name, phone)
+SELECT 'Тестовий покупець', phone
+FROM customers
+WHERE id = 1;
+
+SELECT id, name, price
+FROM medicines
+WHERE id = 1;
+
+ROLLBACK;
+
+Завдання 5. Забутий ROLLBACK
+
+
+BEGIN;
+
+UPDATE medicines
+SET price = price + 5
+WHERE id = 1;
+
+INSERT INTO customers (name, phone)
+SELECT 'Тестовий покупець', phone
+FROM customers
+WHERE id = 1;
+
+COMMIT;
+
+SELECT id, name, price
+FROM medicines
+WHERE id = 1;
+
+SELECT * FROM customers;
