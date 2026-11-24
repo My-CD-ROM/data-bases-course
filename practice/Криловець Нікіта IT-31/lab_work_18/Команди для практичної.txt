@@ -1,0 +1,36 @@
+Завдання 1
+ALTER TABLE medicines
+ADD COLUMN price_with_vat REAL
+GENERATED ALWAYS AS (price * 1.2) VIRTUAL;
+
+Завдання 2
+ALTER TABLE medicines
+ADD COLUMN has_stock INTEGER
+GENERATED ALWAYS AS (stock_quantity > 0) VIRTUAL;
+
+Завдання 3
+Очікувана помилка:
+UPDATE medicines
+SET price_with_vat = 100
+WHERE id = 1;
+
+Завдання 4
+SELECT id, name, price, price_with_vat
+FROM medicines
+WHERE id = 1;
+
+UPDATE medicines
+SET price = 500
+WHERE id = 1;
+
+SELECT id, name, price, price_with_vat
+FROM medicines
+WHERE id = 1;
+
+Завдання 5
+SELECT name, price, price_with_vat
+FROM medicines
+WHERE price_with_vat > 1000;
+
+SELECT *
+FROM medicines;
