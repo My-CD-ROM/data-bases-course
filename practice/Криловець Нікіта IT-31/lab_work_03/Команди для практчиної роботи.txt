@@ -1,0 +1,28 @@
+У цій практичній я створив ER-діаграму, використавши цей код:
+
+erDiagram
+    medicines {
+        int id PK
+        string name
+        string manufacturer
+        string form
+        real price
+        int stock_quantity
+    }
+
+    customers {
+        int id PK
+        string name
+        string phone
+    }
+
+    sales {
+        int id PK
+        int medicine_id FK
+        int customer_id FK
+        date sale_date
+        int quantity
+    }
+
+    medicines ||--o{ sales : "продається"
+    customers ||--o{ sales : "купує"

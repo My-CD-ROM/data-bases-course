@@ -1,0 +1,9 @@
+Якщо автор має 2 книги, і кожна продавалася 3 рази, JOIN створить 6 рядків. COUNT(*) порахує 6 продажів, а не 2 книги. Щоб порахувати саме книги, використовують COUNT(DISTINCT books.id).
+
+SELECT
+    COUNT(*) AS total_sales,
+    COUNT(DISTINCT books.id) AS total_books
+FROM books
+JOIN sales ON books.id = sales.book_id;
+
+Результат: total_sales = 6, total_books = 2.

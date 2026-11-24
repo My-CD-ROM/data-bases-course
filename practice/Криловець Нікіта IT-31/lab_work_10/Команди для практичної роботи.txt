@@ -1,0 +1,35 @@
+Завдання 1. HAVING на COUNT
+SELECT medicine_id, COUNT(*) AS sales_count
+FROM sales
+GROUP BY medicine_id
+HAVING COUNT(*) > 2;
+
+
+Завдання 2. HAVING на SUM
+SELECT medicine_id, SUM(quantity) AS total_quantity
+FROM sales
+GROUP BY medicine_id
+HAVING SUM(quantity) > 10;
+
+
+Завдання 3. WHERE + GROUP BY + HAVING
+SELECT medicine_id, SUM(quantity) AS total_quantity
+FROM sales
+WHERE status = 'completed'
+GROUP BY medicine_id
+HAVING SUM(quantity) > 10;
+
+
+Завдання 4. Свідома помилка
+SELECT medicine_id, COUNT(*) AS sales_count
+FROM sales
+WHERE COUNT(*) > 1
+GROUP BY medicine_id;
+
+
+Завдання 5. LEFT JOIN + GROUP BY + HAVING
+SELECT medicines.name, COUNT(sales.id) AS sales_count
+FROM medicines
+LEFT JOIN sales ON sales.medicine_id = medicines.id
+GROUP BY medicines.id
+HAVING COUNT(sales.id) < 2;

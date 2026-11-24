@@ -1,0 +1,5 @@
+1.WHERE працює до GROUP BY, тому для COUNT() треба використовувати HAVING.
+
+2.INNER JOIN прибере товари без продажів, тобто COUNT = 0 зникне.
+
+3.Пишемо: WHERE → GROUP BY → HAVING. HAVING перед GROUP BY не можна. Виконується: FROM → WHERE → GROUP BY → HAVING → SELECT.

@@ -1,0 +1,37 @@
+Завдання 1
+SELECT medicine_id, COUNT(*) AS sales_count
+FROM sales
+GROUP BY medicine_id;
+
+
+Завдання 2
+SELECT medicines.name, COUNT(sales.id) AS sales_count
+FROM medicines
+LEFT JOIN sales ON sales.medicine_id = medicines.id
+GROUP BY medicines.id;
+
+
+Завдання 3
+SELECT medicine_id,
+       COUNT(*) AS sales_count,
+       SUM(quantity) AS total_quantity
+FROM sales
+GROUP BY medicine_id;
+
+
+Завдання 4
+SELECT status, medicine_id, COUNT(*) AS sales_count
+FROM sales
+GROUP BY status, medicine_id;
+
+
+Завдання 5
+Навмисно name НЕ входить у GROUP BY
+SELECT medicine_id, name, COUNT(*) AS sales_count
+FROM sales
+GROUP BY medicine_id;
+
+Повторити цей запит ще раз і порівняти результат
+SELECT medicine_id, name, COUNT(*) AS sales_count
+FROM sales
+GROUP BY medicine_id;
