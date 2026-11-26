@@ -1,0 +1,9 @@
+brand,model,year,price,status
+Mazda,CX-5,2022,26500.0,in stock
+Kia,Sportage,2023,28200.0,in stock
+Honda,Civic,2020,17900.0,in stock
+Nissan,Qashqai,2021,21400.0,"in stock, new"
+Skoda,Octavia,2022,20800.0,reserved
+Hyundai,Elantra,2021,16900.0,in stock
+Peugeot,3008,2022,24700.0,in stock
+Ford,Kuga,2023,27300.0,in stock
